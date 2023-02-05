@@ -1,10 +1,13 @@
 package com.iaroslaveremeev.repository;
 
+import com.iaroslaveremeev.dto.ResponseResult;
 import com.iaroslaveremeev.model.User;
 import com.iaroslaveremeev.util.Constants;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class UserRepository implements AutoCloseable {
     private Connection conn;
@@ -12,6 +15,44 @@ public class UserRepository implements AutoCloseable {
         Class.forName("com.mysql.cj.jdbc.Driver");
         this.conn = DriverManager.getConnection(Constants.DB_URL,
                 Constants.USERNAME, Constants.PASSWORD);
+    }
+
+    public User getUser(int id) {
+        String sql = "select * from users where users.id=?";
+        try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (!resultSet.next())
+                return null;
+            User user = new User();
+            user.setId(resultSet.getInt(1));
+            user.setName(resultSet.getString(2));
+            user.setPassword(resultSet.getString(3).toCharArray());
+            user.setRegDate(resultSet.getDate(4));
+            return user;
+        } catch (SQLException e) {
+            ResponseResult<User> result = new ResponseResult<>(e.getMessage());
+            return result.getData();
+        }
+    }
+
+    public List<User> getUsers() {
+        String sql = "select * from students";
+        ArrayList<User> users = new ArrayList<>();
+        try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                User user = new User();
+                user.setId(resultSet.getInt(1));
+                user.setLogin(resultSet.getString(2));
+                user.setPassword(resultSet.getString(3).toCharArray());
+                user.setRegDate(resultSet.getDate(4));
+                users.add(user);
+            }
+        } catch (SQLException e) {
+            ResponseResult<List<User>> result = new ResponseResult<>(e.getMessage());
+        }
+        return users;
     }
 
     public boolean add(User user){
@@ -42,4 +83,5 @@ public class UserRepository implements AutoCloseable {
         if (this.conn != null)
             this.conn.close();
     }
+
 }
