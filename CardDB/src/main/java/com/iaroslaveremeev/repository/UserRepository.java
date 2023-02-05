@@ -37,7 +37,7 @@ public class UserRepository implements AutoCloseable {
     }
 
     public List<User> getUsers() {
-        String sql = "select * from students";
+        String sql = "select * from users";
         ArrayList<User> users = new ArrayList<>();
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -56,7 +56,7 @@ public class UserRepository implements AutoCloseable {
     }
 
     public boolean add(User user){
-        String sql = "insert into users(login,password,name) values (?,?,?,?)";
+        String sql = "insert into users(login,password,name,regDate) values (?,?,?,?)";
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, user.getLogin());

@@ -22,7 +22,7 @@ public class RegistrationServlet extends HttpServlet {
         req.setCharacterEncoding("utf-8");
     }
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         setUnicode(req, resp);
         resp.getWriter().println("This is CardDB registration servlet!");
     }
