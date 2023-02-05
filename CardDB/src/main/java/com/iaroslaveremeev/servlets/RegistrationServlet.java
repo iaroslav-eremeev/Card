@@ -13,9 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.Date;
 
 @WebServlet("/registration")
 public class RegistrationServlet extends HttpServlet {
@@ -40,15 +37,13 @@ public class RegistrationServlet extends HttpServlet {
         if(login != null && password != null && name != null) {
             try {
                 UserRepository userRepository = new UserRepository();
-                User user = new User(login, password, name);
-                Date regDate = new Date(LocalDate.now());
-                user.setRegDate(new Date());
-                if (userRepository.add(student)) {
+                User user = new User(login, password.toCharArray(), name);
+                if (userRepository.add(user)) {
                     resp.getWriter()
-                            .println(objectMapper.writeValueAsString(new ResponseResult<>(student)));
+                            .println(objectMapper.writeValueAsString(new ResponseResult<>(user)));
                 }
                 else {
-                    throw new RuntimeException("Student not added");
+                    throw new RuntimeException("User not registered");
                 }
             } catch (Exception e) {
                 resp.setStatus(400);
@@ -58,11 +53,11 @@ public class RegistrationServlet extends HttpServlet {
         }
         else{
             try (BufferedReader reader = req.getReader()) {
-                Student student = objectMapper.readValue(reader, Student.class);
-                StudentRepository studentRepository = new StudentRepository();
-                studentRepository.add(student);
+                User user = objectMapper.readValue(reader, User.class);
+                UserRepository userRepository = new UserRepository();
+                userRepository.add(user);
                 resp.getWriter()
-                        .println(objectMapper.writeValueAsString(new ResponseResult<>(student)));
+                        .println(objectMapper.writeValueAsString(new ResponseResult<>(user)));
             } catch (Exception e) {
                 resp.setStatus(400);
                 resp.getWriter()
