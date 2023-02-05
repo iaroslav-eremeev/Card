@@ -2,6 +2,8 @@ package com.iaroslaveremeev.model;
 
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Objects;
@@ -97,12 +99,13 @@ public class User {
 
     @Override
     public String toString() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         return "User{" +
                 "id=" + id +
                 ", login='" + login + '\'' +
                 ", password=" + Arrays.toString(password) +
                 ", name='" + name + '\'' +
-                ", regDate=" + regDate +
+                ", regDate=" + dateFormat.format(regDate) +
                 '}';
     }
 }

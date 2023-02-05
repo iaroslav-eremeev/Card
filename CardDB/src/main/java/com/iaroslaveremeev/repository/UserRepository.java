@@ -56,7 +56,7 @@ public class UserRepository implements AutoCloseable {
     }
 
     public boolean add(User user){
-        String sql = "insert into users(login,password,name,regDate) values (?,?,?,?)";
+        String sql = "insert into users(login, password, name, regDate) values (?,?,?,?)";
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, user.getLogin());
