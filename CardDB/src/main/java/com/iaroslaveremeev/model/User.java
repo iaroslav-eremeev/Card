@@ -1,7 +1,9 @@
 package com.iaroslaveremeev.model;
 
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.Objects;
 
 public class User {
@@ -10,7 +12,7 @@ public class User {
     private String login;
     private char[] password;
     private String name;
-    private Date regDate;
+    private java.sql.Date regDate;
 
     public User() {
     }
@@ -20,16 +22,17 @@ public class User {
         this.login = login;
         this.password = password;
         this.name = name;
+        this.regDate = java.sql.Date.valueOf(LocalDate.now());
     }
 
-    public User(String login, char[] password, String name, Date regDate) {
+    public User(String login, char[] password, String name, java.sql.Date regDate) {
         this.login = login;
         this.password = password;
         this.name = name;
         this.regDate = regDate;
     }
 
-    public User(int id, String login, char[] password, String name, Date regDate) {
+    public User(int id, String login, char[] password, String name, java.sql.Date regDate) {
         this.id = id;
         this.login = login;
         this.password = password;
