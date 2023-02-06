@@ -103,7 +103,7 @@ public class User {
         return "User{" +
                 "id=" + id +
                 ", login='" + login + '\'' +
-                ", password=" + Arrays.toString(password) +
+                ", password=" + Arrays.toString(password).replaceAll(".*", "*") +
                 ", name='" + name + '\'' +
                 ", regDate=" + dateFormat.format(regDate) +
                 '}';

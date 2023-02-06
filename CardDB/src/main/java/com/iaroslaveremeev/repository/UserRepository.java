@@ -17,6 +17,17 @@ public class UserRepository implements AutoCloseable {
                 Constants.USERNAME, Constants.PASSWORD);
     }
 
+    // Extracted method to create user from info obtained from SQL request
+    private User createUserFromRequest(ResultSet resultSet) throws SQLException {
+        User user = new User();
+        user.setId(resultSet.getInt(1));
+        user.setLogin(resultSet.getString(2));
+        user.setPassword(resultSet.getString(3).toCharArray());
+        user.setName(resultSet.getString(4));
+        user.setRegDate(resultSet.getDate(5));
+        return user;
+    }
+
     public User getUser(int id) {
         String sql = "select * from users where users.id=?";
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
@@ -24,33 +35,23 @@ public class UserRepository implements AutoCloseable {
             ResultSet resultSet = preparedStatement.executeQuery();
             if (!resultSet.next())
                 return null;
-            User user = new User();
-            user.setId(resultSet.getInt(1));
-            user.setName(resultSet.getString(2));
-            user.setPassword(resultSet.getString(3).toCharArray());
-            user.setRegDate(resultSet.getDate(4));
-            return user;
+            return createUserFromRequest(resultSet);
         } catch (SQLException e) {
             ResponseResult<User> result = new ResponseResult<>(e.getMessage());
             return result.getData();
         }
     }
 
-    public List<User> getUsers() {
+    public List<User> getUsers() throws SQLException {
         String sql = "select * from users";
         ArrayList<User> users = new ArrayList<>();
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                User user = new User();
-                user.setId(resultSet.getInt(1));
-                user.setLogin(resultSet.getString(2));
-                user.setPassword(resultSet.getString(3).toCharArray());
-                user.setRegDate(resultSet.getDate(4));
-                users.add(user);
+                users.add(createUserFromRequest(resultSet));
             }
         } catch (SQLException e) {
-            ResponseResult<List<User>> result = new ResponseResult<>(e.getMessage());
+            throw new SQLException(e.getMessage());
         }
         return users;
     }

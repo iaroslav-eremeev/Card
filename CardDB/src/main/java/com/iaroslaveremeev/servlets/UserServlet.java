@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.rmi.NoSuchObjectException;
+import java.sql.SQLException;
+import java.util.Arrays;
 
 @WebServlet("/users")
 public class UserServlet extends HttpServlet {
@@ -45,11 +47,36 @@ public class UserServlet extends HttpServlet {
             else {
                 resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(userRepository.getUsers())));
             }
-        } catch (Exception e) {
+        } catch (SQLException | ClassNotFoundException | IOException e) {
             resp.setStatus(400);
             resp.getWriter()
                     .println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
         }
     }
 
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        setUnicode(req, resp);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String login = req.getParameter("login");
+        String password = req.getParameter("password");
+        if(login != null && password != null) {
+            try {
+                UserRepository userRepository = new UserRepository();
+                for (int i = 0; i < userRepository.getUsers().size(); i++) {
+                    User user = userRepository.getUsers().get(i);
+                    if (login.equals(user.getLogin())){
+                        if (password.equals(Arrays.toString(user.getPassword()))){
+                            resp.getWriter()
+                                    .println(objectMapper.writeValueAsString(new ResponseResult<>(user)));
+                        }
+                    }
+                }
+            } catch (SQLException | ClassNotFoundException | IOException e) {
+                resp.setStatus(400);
+                resp.getWriter()
+                        .println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
+            }
+        }
+    }
 }
