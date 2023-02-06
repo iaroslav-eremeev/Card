@@ -65,18 +65,27 @@ public class UserServlet extends HttpServlet {
                 UserRepository userRepository = new UserRepository();
                 for (int i = 0; i < userRepository.getUsers().size(); i++) {
                     User user = userRepository.getUsers().get(i);
-                    if (login.equals(user.getLogin())){
-                        if (password.equals(Arrays.toString(user.getPassword()))){
-                            resp.getWriter()
-                                    .println(objectMapper.writeValueAsString(new ResponseResult<>(user)));
-                        }
+                    String userPassword = Arrays.toString(user.getPassword())
+                            .replaceAll(",", "")
+                            .replaceAll("\\]", "")
+                            .replaceAll("\\[", "")
+                            .replaceAll(" ", "");
+                    if (login.equals(user.getLogin()) &&
+                            password.equals(userPassword)){
+                        resp.getWriter()
+                                .println(objectMapper.writeValueAsString(new ResponseResult<>(user)));
                     }
                 }
-            } catch (SQLException | ClassNotFoundException | IOException e) {
+            } catch (SQLException | ClassNotFoundException e) {
                 resp.setStatus(400);
                 resp.getWriter()
                         .println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
             }
+        }
+        else {
+            resp.setStatus(400);
+            resp.getWriter()
+                    .println(objectMapper.writeValueAsString(new ResponseResult<>("Incorrect login or password")));
         }
     }
 }
