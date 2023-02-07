@@ -1,9 +1,13 @@
 package com.iaroslaveremeev.repository;
 
+import com.iaroslaveremeev.dto.ResponseResult;
 import com.iaroslaveremeev.model.Category;
+import com.iaroslaveremeev.model.User;
 import com.iaroslaveremeev.util.Constants;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CategoryRepository implements AutoCloseable {
 
@@ -42,6 +46,60 @@ public class CategoryRepository implements AutoCloseable {
             e.printStackTrace();
         }
         return false;
+    }
+
+    public Category getCategory(int id) {
+        String sql = "select * from categories where categories.id=?";
+        try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
+            preparedStatement.setInt(1, id);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (!resultSet.next())
+                return null;
+            Category category = new Category();
+            category.setId(resultSet.getInt(1));
+            category.setName(resultSet.getString(2));
+            category.setUserId(resultSet.getInt(3));
+            return category;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public Category getCategoryByUserId(int userId) {
+        String sql = "select * from categories where categories.userId=?";
+        try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
+            preparedStatement.setInt(1, userId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (!resultSet.next())
+                return null;
+            Category category = new Category();
+            category.setId(resultSet.getInt(1));
+            category.setName(resultSet.getString(2));
+            category.setUserId(resultSet.getInt(3));
+            return category;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public List<Category> getCategories() throws SQLException {
+        String sql = "select * from categories";
+        ArrayList<Category> categories = new ArrayList<>();
+        try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                Category category = new Category();
+                category.setId(resultSet.getInt(1));
+                category.setName(resultSet.getString(2));
+                category.setUserId(resultSet.getInt(3));
+                categories.add(category);
+            }
+        } catch (SQLException e) {
+            throw new SQLException(e.getMessage());
+        }
+        return categories;
     }
 
     public void close() throws Exception {
