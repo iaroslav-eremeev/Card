@@ -72,6 +72,17 @@ public class CategoryServlet extends HttpServlet {
                             .println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
                 }
             }
+            else
+                try {
+                    resp.getWriter()
+                            .println(objectMapper
+                                    .writeValueAsString(new ResponseResult<>(categoryRepository.getCategories())));
+                }
+                catch (RuntimeException | NoSuchObjectException e) {
+                    resp.setStatus(400);
+                    resp.getWriter()
+                            .println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
+                }
         } catch (SQLException | ClassNotFoundException | IOException e) {
             resp.setStatus(400);
             resp.getWriter()
