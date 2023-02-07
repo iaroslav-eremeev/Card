@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.rmi.NoSuchObjectException;
 import java.sql.SQLException;
 import java.util.Arrays;
 
@@ -35,6 +36,49 @@ public class CategoryServlet extends HttpServlet {
         resp.setContentType("text/html;charset=utf-8");
         req.setCharacterEncoding("utf-8");
     }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        setUnicode(req, resp);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String id = req.getParameter("id");
+        String userId = req.getParameter("userId");
+        try {
+            CategoryRepository categoryRepository = new CategoryRepository();
+            if (id != null){
+                try {
+                    Category category = categoryRepository.getCategory(Integer.parseInt(id));
+                    if (category == null) throw new NoSuchObjectException("There is no category with such id!");
+                    resp.getWriter()
+                            .println(objectMapper.writeValueAsString(new ResponseResult<>(category)));
+                }
+                catch (RuntimeException | NoSuchObjectException e) {
+                    resp.setStatus(400);
+                    resp.getWriter()
+                            .println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
+                }
+            }
+            else if (userId != null){
+                try {
+                    Category category = categoryRepository.getCategoryByUserId(Integer.parseInt(userId));
+                    if (category == null)
+                        throw new NoSuchObjectException("There is no category with such user id!");
+                    resp.getWriter()
+                            .println(objectMapper.writeValueAsString(new ResponseResult<>(category)));
+                }
+                catch (RuntimeException | NoSuchObjectException e) {
+                    resp.setStatus(400);
+                    resp.getWriter()
+                            .println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
+                }
+            }
+        } catch (SQLException | ClassNotFoundException | IOException e) {
+            resp.setStatus(400);
+            resp.getWriter()
+                    .println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
+        }
+    }
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         setUnicode(req, resp);
