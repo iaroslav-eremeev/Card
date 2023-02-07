@@ -89,6 +89,7 @@ public class UserServlet extends HttpServlet {
         }
     }
 
+    //TODO Дописать удаление всей информации связанной с юзером (когда будут готовы карточки и категории)
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         setUnicode(req, resp);

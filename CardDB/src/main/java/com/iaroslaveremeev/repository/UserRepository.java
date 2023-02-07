@@ -63,8 +63,6 @@ public class UserRepository implements AutoCloseable {
             preparedStatement.setString(1, user.getLogin());
             preparedStatement.setString(2, Arrays.toString(user.getPassword()));
             preparedStatement.setString(3, user.getName());
-            // Сработает ли - хз, раньше было через Timestamp - по рекомендации ментора
-            // Создание даты будет не здесь, так как тут уже готовый юзер с 4-мя полями
             preparedStatement.setDate(4, user.getRegDate());
             int row = preparedStatement.executeUpdate();
             if (row <= 0)
