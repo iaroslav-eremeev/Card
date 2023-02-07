@@ -88,4 +88,29 @@ public class UserServlet extends HttpServlet {
                     .println(objectMapper.writeValueAsString(new ResponseResult<>("Incorrect login or password")));
         }
     }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        setUnicode(req, resp);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String id = req.getParameter("id");
+        try {
+            UserRepository userRepository = new UserRepository();
+            if(id != null){
+                try {
+                    User userToDelete = userRepository.getUser(Integer.parseInt(id));
+                    if (userToDelete == null) throw new NoSuchObjectException("No user with such id!");
+                    userRepository.delete(Integer.parseInt(id));
+                    resp.getWriter()
+                            .println(objectMapper.writeValueAsString(new ResponseResult<>(userToDelete)));
+                } catch (RuntimeException | NoSuchObjectException e) {
+                    resp.setStatus(400);
+                    resp.getWriter()
+                            .println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
+                }
+            }
+        } catch (Exception e) {
+            resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
+        }
+    }
 }

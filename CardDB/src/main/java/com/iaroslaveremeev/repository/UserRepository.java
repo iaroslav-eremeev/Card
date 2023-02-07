@@ -80,6 +80,15 @@ public class UserRepository implements AutoCloseable {
         return false;
     }
 
+    public boolean delete(int id) {
+        String sql = "delete from users where users.id=?";
+        try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
+            preparedStatement.setInt(1, id);
+            return preparedStatement.executeUpdate() > 0;
+        } catch (SQLException ignored) {}
+        return false;
+    }
+
     public void close() throws Exception {
         if (this.conn != null)
             this.conn.close();
