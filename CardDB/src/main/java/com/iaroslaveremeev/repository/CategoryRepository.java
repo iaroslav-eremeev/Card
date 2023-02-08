@@ -16,16 +16,6 @@ public class CategoryRepository implements AutoCloseable {
         this.conn = DriverManager.getConnection(Constants.DB_URL,
                 Constants.USERNAME, Constants.PASSWORD);
     }
-
-    /**
-     * •	post – осуществляет добавление новой категории для пользователя с заданным id в базу данных
-     * •	get – осуществляет получение всех категорий для заданного id пользователя, получение категории по ее id
-     * •	put – осуществляет обновление категории по ее id
-     * •	delete – осуществляет удаление категории и всех записей, связанных с ней
-     *
-     * @return
-     * @throws Exception
-     */
     public boolean addUserCategory(Category category){
         String sql = "insert into categories(name, userId) values (?,?)";
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql,
@@ -112,6 +102,7 @@ public class CategoryRepository implements AutoCloseable {
         }
     }
 
+    //TODO добавить каскадное удаление данных
     public boolean delete(int id) {
         String sql = "delete from categories where categories.id=?";
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {

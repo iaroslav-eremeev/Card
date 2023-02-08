@@ -18,16 +18,6 @@ import java.sql.SQLException;
 @WebServlet("/categories")
 public class CategoryServlet extends HttpServlet {
 
-    /**
-     * •	post – осуществляет добавление новой категории для пользователя с заданным id в базу данных
-     * •	get – осуществляет получение всех категорий для заданного id пользователя, получение категории по ее id
-     * •	put – осуществляет обновление категории по ее id
-     * •	delete – осуществляет удаление категории и всех записей, связанных с ней
-     *
-     * @return
-     * @throws Exception
-     */
-
     protected void setUnicode(HttpServletRequest req, HttpServletResponse resp)
             throws UnsupportedEncodingException {
         resp.setCharacterEncoding("utf-8");
@@ -141,6 +131,7 @@ public class CategoryServlet extends HttpServlet {
         }
     }
 
+    //TODO Добавить каскадное удаление данных
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         setUnicode(req, resp);
@@ -152,7 +143,7 @@ public class CategoryServlet extends HttpServlet {
                 try {
                     Category categoryToDelete = categoryRepository.get(Integer.parseInt(id));
                     if (categoryToDelete == null) throw new NoSuchObjectException("No category with such id!");
-                    categoryRepository.delete(categoryToDelete);
+                    categoryRepository.delete(categoryToDelete.getId());
                     resp.getWriter()
                             .println(objectMapper.writeValueAsString(new ResponseResult<>(categoryToDelete)));
                 } catch (RuntimeException | NoSuchObjectException e) {
