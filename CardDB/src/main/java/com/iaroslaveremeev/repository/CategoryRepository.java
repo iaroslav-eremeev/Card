@@ -1,8 +1,6 @@
 package com.iaroslaveremeev.repository;
 
-import com.iaroslaveremeev.dto.ResponseResult;
 import com.iaroslaveremeev.model.Category;
-import com.iaroslaveremeev.model.User;
 import com.iaroslaveremeev.util.Constants;
 
 import java.sql.*;
@@ -48,7 +46,7 @@ public class CategoryRepository implements AutoCloseable {
         return false;
     }
 
-    public Category getCategory(int id) {
+    public Category get(int id) {
         String sql = "select * from categories where categories.id=?";
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
             preparedStatement.setInt(1, id);
@@ -66,7 +64,7 @@ public class CategoryRepository implements AutoCloseable {
         return null;
     }
 
-    public Category getCategoryByUserId(int userId) {
+    public Category getByUserId(int userId) {
         String sql = "select * from categories where categories.userId=?";
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
             preparedStatement.setInt(1, userId);
@@ -84,7 +82,7 @@ public class CategoryRepository implements AutoCloseable {
         return null;
     }
 
-    public List<Category> getCategories() throws SQLException {
+    public List<Category> getAll() throws SQLException {
         String sql = "select * from categories";
         ArrayList<Category> categories = new ArrayList<>();
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
@@ -112,6 +110,15 @@ public class CategoryRepository implements AutoCloseable {
         } catch (SQLException e) {
             throw new SQLException(e.getMessage());
         }
+    }
+
+    public boolean delete(int id) {
+        String sql = "delete from categories where categories.id=?";
+        try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
+            preparedStatement.setInt(1, id);
+            return preparedStatement.executeUpdate() > 0;
+        } catch (SQLException ignored) {}
+        return false;
     }
 
     public void close() throws Exception {

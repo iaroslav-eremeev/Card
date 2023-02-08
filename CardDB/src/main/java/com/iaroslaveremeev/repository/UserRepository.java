@@ -18,7 +18,7 @@ public class UserRepository implements AutoCloseable {
     }
 
     // Extracted method to create user from info obtained from SQL request
-    private User createUserFromRequest(ResultSet resultSet) throws SQLException {
+    private User createFromRequest(ResultSet resultSet) throws SQLException {
         User user = new User();
         user.setId(resultSet.getInt(1));
         user.setLogin(resultSet.getString(2));
@@ -28,27 +28,27 @@ public class UserRepository implements AutoCloseable {
         return user;
     }
 
-    public User getUser(int id) {
+    public User get(int id) {
         String sql = "select * from users where users.id=?";
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
             preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (!resultSet.next())
                 return null;
-            return createUserFromRequest(resultSet);
+            return createFromRequest(resultSet);
         } catch (SQLException e) {
             ResponseResult<User> result = new ResponseResult<>(e.getMessage());
             return result.getData();
         }
     }
 
-    public List<User> getUsers() throws SQLException {
+    public List<User> getAll() throws SQLException {
         String sql = "select * from users";
         ArrayList<User> users = new ArrayList<>();
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                users.add(createUserFromRequest(resultSet));
+                users.add(createFromRequest(resultSet));
             }
         } catch (SQLException e) {
             throw new SQLException(e.getMessage());

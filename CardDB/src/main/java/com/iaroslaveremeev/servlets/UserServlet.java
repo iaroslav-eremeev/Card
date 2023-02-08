@@ -33,7 +33,7 @@ public class UserServlet extends HttpServlet {
             UserRepository userRepository = new UserRepository();
             if (id != null){
                 try {
-                    User user = userRepository.getUser(Integer.parseInt(id));
+                    User user = userRepository.get(Integer.parseInt(id));
                     if (user == null) throw new NoSuchObjectException("There is no user with such id!");
                     resp.getWriter()
                             .println(objectMapper.writeValueAsString(new ResponseResult<>(user)));
@@ -45,7 +45,7 @@ public class UserServlet extends HttpServlet {
                 }
             }
             else {
-                resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(userRepository.getUsers())));
+                resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(userRepository.getAll())));
             }
         } catch (SQLException | ClassNotFoundException | IOException e) {
             resp.setStatus(400);
@@ -63,8 +63,8 @@ public class UserServlet extends HttpServlet {
         if(login != null && password != null) {
             try {
                 UserRepository userRepository = new UserRepository();
-                for (int i = 0; i < userRepository.getUsers().size(); i++) {
-                    User user = userRepository.getUsers().get(i);
+                for (int i = 0; i < userRepository.getAll().size(); i++) {
+                    User user = userRepository.getAll().get(i);
                     String userPassword = Arrays.toString(user.getPassword())
                             .replaceAll(",", "")
                             .replaceAll("\\]", "")
@@ -99,7 +99,7 @@ public class UserServlet extends HttpServlet {
             UserRepository userRepository = new UserRepository();
             if(id != null){
                 try {
-                    User userToDelete = userRepository.getUser(Integer.parseInt(id));
+                    User userToDelete = userRepository.get(Integer.parseInt(id));
                     if (userToDelete == null) throw new NoSuchObjectException("No user with such id!");
                     userRepository.delete(Integer.parseInt(id));
                     resp.getWriter()

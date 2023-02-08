@@ -45,7 +45,7 @@ public class CategoryServlet extends HttpServlet {
             CategoryRepository categoryRepository = new CategoryRepository();
             if (id != null){
                 try {
-                    Category category = categoryRepository.getCategory(Integer.parseInt(id));
+                    Category category = categoryRepository.get(Integer.parseInt(id));
                     if (category == null) throw new NoSuchObjectException("There is no category with such id!");
                     resp.getWriter()
                             .println(objectMapper.writeValueAsString(new ResponseResult<>(category)));
@@ -58,7 +58,7 @@ public class CategoryServlet extends HttpServlet {
             }
             else if (userId != null){
                 try {
-                    Category category = categoryRepository.getCategoryByUserId(Integer.parseInt(userId));
+                    Category category = categoryRepository.getByUserId(Integer.parseInt(userId));
                     if (category == null)
                         throw new NoSuchObjectException("There is no category with such user id!");
                     resp.getWriter()
@@ -74,7 +74,7 @@ public class CategoryServlet extends HttpServlet {
                 try {
                     resp.getWriter()
                             .println(objectMapper
-                                    .writeValueAsString(new ResponseResult<>(categoryRepository.getCategories())));
+                                    .writeValueAsString(new ResponseResult<>(categoryRepository.getAll())));
                 }
                 catch (RuntimeException | NoSuchObjectException e) {
                     resp.setStatus(400);
@@ -98,8 +98,8 @@ public class CategoryServlet extends HttpServlet {
             try {
                 CategoryRepository categoryRepository = new CategoryRepository();
                 UserRepository userRepository = new UserRepository();
-                for (int i = 0; i < userRepository.getUsers().size(); i++) {
-                    if (userRepository.getUsers().get(i).getId() == Integer.parseInt(userId)){
+                for (int i = 0; i < userRepository.getAll().size(); i++) {
+                    if (userRepository.getAll().get(i).getId() == Integer.parseInt(userId)){
                         Category category = new Category(name, Integer.parseInt(userId));
                         categoryRepository.addUserCategory(category);
                         resp.getWriter()
@@ -138,6 +138,31 @@ public class CategoryServlet extends HttpServlet {
                 resp.getWriter()
                         .println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
             }
+        }
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        setUnicode(req, resp);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String id = req.getParameter("id");
+        try {
+            CategoryRepository categoryRepository = new CategoryRepository();
+            if(id != null){
+                try {
+                    Category categoryToDelete = categoryRepository.get(Integer.parseInt(id));
+                    if (categoryToDelete == null) throw new NoSuchObjectException("No category with such id!");
+                    categoryRepository.delete(categoryToDelete);
+                    resp.getWriter()
+                            .println(objectMapper.writeValueAsString(new ResponseResult<>(categoryToDelete)));
+                } catch (RuntimeException | NoSuchObjectException e) {
+                    resp.setStatus(400);
+                    resp.getWriter()
+                            .println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
+                }
+            }
+        } catch (Exception e) {
+            resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
         }
     }
 }
