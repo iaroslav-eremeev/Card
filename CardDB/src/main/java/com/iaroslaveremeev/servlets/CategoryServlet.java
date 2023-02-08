@@ -3,7 +3,6 @@ package com.iaroslaveremeev.servlets;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iaroslaveremeev.dto.ResponseResult;
 import com.iaroslaveremeev.model.Category;
-import com.iaroslaveremeev.model.User;
 import com.iaroslaveremeev.repository.CategoryRepository;
 import com.iaroslaveremeev.repository.UserRepository;
 
@@ -15,7 +14,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.rmi.NoSuchObjectException;
 import java.sql.SQLException;
-import java.util.Arrays;
 
 @WebServlet("/categories")
 public class CategoryServlet extends HttpServlet {
@@ -118,6 +116,28 @@ public class CategoryServlet extends HttpServlet {
             resp.setStatus(400);
             resp.getWriter()
                     .println(objectMapper.writeValueAsString(new ResponseResult<>("Incorrect input")));
+        }
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        setUnicode(req, resp);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String id = req.getParameter("id");
+        String name = req.getParameter("name");
+        String userId = req.getParameter("userId");
+        if(id != null & name != null && userId != null) {
+            try {
+                CategoryRepository categoryRepository = new CategoryRepository();
+                Category newCategory = new Category(Integer.parseInt(id), name, Integer.parseInt(userId));
+                categoryRepository.update(newCategory);
+                resp.getWriter()
+                        .println(objectMapper.writeValueAsString(new ResponseResult<>(newCategory)));
+            } catch (Exception e) {
+                resp.setStatus(400);
+                resp.getWriter()
+                        .println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
+            }
         }
     }
 }

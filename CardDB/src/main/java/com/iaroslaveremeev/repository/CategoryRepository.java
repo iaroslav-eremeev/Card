@@ -102,6 +102,18 @@ public class CategoryRepository implements AutoCloseable {
         return categories;
     }
 
+    public boolean update(Category category) throws SQLException {
+        String sql = "update categories set categories.name=?, categories.userId=? where categories.id=?";
+        try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
+            preparedStatement.setString(1, category.getName());
+            preparedStatement.setInt(2, category.getUserId());
+            preparedStatement.setInt(3, category.getId());
+            return preparedStatement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new SQLException(e.getMessage());
+        }
+    }
+
     public void close() throws Exception {
         if (this.conn != null)
             this.conn.close();
