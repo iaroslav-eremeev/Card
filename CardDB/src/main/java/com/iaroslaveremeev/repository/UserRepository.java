@@ -11,10 +11,12 @@ import java.util.List;
 
 public class UserRepository implements AutoCloseable {
     private Connection conn;
-    public UserRepository() throws SQLException, ClassNotFoundException {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        this.conn = DriverManager.getConnection(Constants.DB_URL,
-                Constants.USERNAME, Constants.PASSWORD);
+    public UserRepository() {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            this.conn = DriverManager.getConnection(Constants.DB_URL,
+                    Constants.USERNAME, Constants.PASSWORD);
+        } catch (SQLException | ClassNotFoundException ignored) {}
     }
 
     // Extracted method to create user from info obtained from SQL request
@@ -42,7 +44,7 @@ public class UserRepository implements AutoCloseable {
         }
     }
 
-    public List<User> getAll() throws SQLException {
+    public List<User> getAll()  {
         String sql = "select * from users";
         ArrayList<User> users = new ArrayList<>();
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
@@ -50,9 +52,7 @@ public class UserRepository implements AutoCloseable {
             while (resultSet.next()) {
                 users.add(createFromRequest(resultSet));
             }
-        } catch (SQLException e) {
-            throw new SQLException(e.getMessage());
-        }
+        } catch (SQLException ignored) {}
         return users;
     }
 
@@ -63,7 +63,8 @@ public class UserRepository implements AutoCloseable {
             preparedStatement.setString(1, user.getLogin());
             preparedStatement.setString(2, Arrays.toString(user.getPassword()));
             preparedStatement.setString(3, user.getName());
-            preparedStatement.setDate(4, user.getRegDate());
+            // Получение текущего времени через timestamp
+            preparedStatement.setTimestamp(4, new Timestamp(user.getRegDate().getTime()));
             int row = preparedStatement.executeUpdate();
             if (row <= 0)
                 return false;
@@ -87,9 +88,11 @@ public class UserRepository implements AutoCloseable {
         return false;
     }
 
-    public void close() throws Exception {
-        if (this.conn != null)
-            this.conn.close();
+    public void close() {
+        try {
+            if (this.conn != null)
+                this.conn.close();
+        } catch (Exception ignored) {}
     }
 
 }

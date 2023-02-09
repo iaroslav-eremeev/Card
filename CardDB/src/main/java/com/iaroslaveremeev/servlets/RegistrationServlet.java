@@ -21,11 +21,6 @@ public class RegistrationServlet extends HttpServlet {
         resp.setContentType("text/html;charset=utf-8");
         req.setCharacterEncoding("utf-8");
     }
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        setUnicode(req, resp);
-        resp.getWriter().println("This is CardDB registration servlet!");
-    }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -35,8 +30,7 @@ public class RegistrationServlet extends HttpServlet {
         String password = req.getParameter("password");
         String name = req.getParameter("name");
         if(login != null && password != null && name != null) {
-            try {
-                UserRepository userRepository = new UserRepository();
+            try(UserRepository userRepository = new UserRepository()) {
                 User user = new User(login, password.toCharArray(), name);
                 if (userRepository.add(user)) {
                     resp.getWriter()
@@ -51,20 +45,5 @@ public class RegistrationServlet extends HttpServlet {
                         .println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
             }
         }
-        else{
-            try (BufferedReader reader = req.getReader()) {
-                User user = objectMapper.readValue(reader, User.class);
-                UserRepository userRepository = new UserRepository();
-                userRepository.add(user);
-                resp.getWriter()
-                        .println(objectMapper.writeValueAsString(new ResponseResult<>(user)));
-            } catch (Exception e) {
-                resp.setStatus(400);
-                resp.getWriter()
-                        .println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
-            }
-        }
     }
-
-
 }

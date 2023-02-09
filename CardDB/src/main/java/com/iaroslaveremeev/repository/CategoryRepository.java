@@ -11,6 +11,8 @@ public class CategoryRepository implements AutoCloseable {
 
     private Connection conn;
 
+    // Конструктор не должен бросать ошибки SQL
+    // Репозиторий и сервлет не имеет отношения к базе данных
     public CategoryRepository() throws SQLException, ClassNotFoundException {
         Class.forName("com.mysql.cj.jdbc.Driver");
         this.conn = DriverManager.getConnection(Constants.DB_URL,

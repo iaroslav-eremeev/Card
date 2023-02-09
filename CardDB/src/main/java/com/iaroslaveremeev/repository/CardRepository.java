@@ -48,7 +48,7 @@ public class CardRepository implements AutoCloseable {
             if (!resultSet.next())
                 return null;
             Card card = new Card();
-            card.setQuestion(resultSet.getString(1);
+            card.setQuestion(resultSet.getString(1));
             card.setAnswer(resultSet.getString(2));
             card.setCategoryId(resultSet.getInt(3));
             card.setCreationDate(resultSet.getDate(4));
@@ -99,7 +99,7 @@ public class CardRepository implements AutoCloseable {
         }
         return null;
     }
-
+/*
     public List<Category> getAll() throws SQLException {
         String sql = "select * from categories";
         ArrayList<Category> categories = new ArrayList<>();
@@ -138,7 +138,7 @@ public class CardRepository implements AutoCloseable {
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException ignored) {}
         return false;
-    }
+    }*/
 
     public void close() throws Exception {
         if (this.conn != null)

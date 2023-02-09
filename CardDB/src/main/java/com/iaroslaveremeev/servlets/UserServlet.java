@@ -15,6 +15,9 @@ import java.rmi.NoSuchObjectException;
 import java.sql.SQLException;
 import java.util.Arrays;
 
+//TODO Убрать Exceptions - образец - проект по телевизорам с лекции
+//TODO обрабатывать ошибки внутри класса репозитория
+
 @WebServlet("/users")
 public class UserServlet extends HttpServlet {
     protected void setUnicode(HttpServletRequest req, HttpServletResponse resp)
@@ -47,7 +50,7 @@ public class UserServlet extends HttpServlet {
             else {
                 resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(userRepository.getAll())));
             }
-        } catch (SQLException | ClassNotFoundException | IOException e) {
+        } catch (IOException e) {
             resp.setStatus(400);
             resp.getWriter()
                     .println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
@@ -61,8 +64,7 @@ public class UserServlet extends HttpServlet {
         String login = req.getParameter("login");
         String password = req.getParameter("password");
         if(login != null && password != null) {
-            try {
-                UserRepository userRepository = new UserRepository();
+            try (UserRepository userRepository = new UserRepository()) {
                 for (int i = 0; i < userRepository.getAll().size(); i++) {
                     User user = userRepository.getAll().get(i);
                     String userPassword = Arrays.toString(user.getPassword())
@@ -76,16 +78,13 @@ public class UserServlet extends HttpServlet {
                                 .println(objectMapper.writeValueAsString(new ResponseResult<>(user)));
                     }
                 }
-            } catch (SQLException | ClassNotFoundException e) {
-                resp.setStatus(400);
-                resp.getWriter()
-                        .println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
             }
         }
         else {
             resp.setStatus(400);
             resp.getWriter()
-                    .println(objectMapper.writeValueAsString(new ResponseResult<>("Incorrect login or password")));
+                    .println(objectMapper.writeValueAsString(
+                            new ResponseResult<>("Incorrect login or password")));
         }
     }
 
