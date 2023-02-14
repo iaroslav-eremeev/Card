@@ -8,7 +8,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
 <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Label text="Registration form">
@@ -24,7 +23,7 @@
             <Font size="18.0" />
          </font>
       </Label>
-      <TextField alignment="CENTER" maxWidth="200.0" prefHeight="30.0" prefWidth="200.0">
+      <TextField fx:id="regLogin" alignment="CENTER" maxWidth="200.0" prefHeight="30.0" prefWidth="200.0">
          <font>
             <Font size="14.0" />
          </font>
@@ -40,7 +39,7 @@
             <Font size="18.0" />
          </font>
       </Label>
-      <TextField alignment="CENTER" maxWidth="200.0" prefHeight="30.0" prefWidth="200.0">
+      <TextField fx:id="regName" alignment="CENTER" maxWidth="200.0" prefHeight="30.0" prefWidth="200.0">
          <font>
             <Font size="14.0" />
          </font>
@@ -56,7 +55,7 @@
             <Font size="18.0" />
          </font>
       </Label>
-      <PasswordField maxWidth="200.0" prefWidth="200.0">
+      <PasswordField fx:id="regPassword" maxWidth="200.0" prefWidth="200.0">
          <font>
             <Font size="14.0" />
          </font>
@@ -64,7 +63,7 @@
             <Insets bottom="10.0" top="10.0" />
          </VBox.margin>
       </PasswordField>
-      <Button alignment="CENTER" contentDisplay="CENTER" maxWidth="100.0" mnemonicParsing="false" prefWidth="100.0" text="Sign up">
+      <Button alignment="CENTER" contentDisplay="CENTER" maxWidth="100.0" mnemonicParsing="false" onAction="#signUp" prefWidth="100.0" text="Sign up">
          <VBox.margin>
             <Insets top="10.0" />
          </VBox.margin>

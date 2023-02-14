@@ -1,6 +1,7 @@
 package com.iaroslaveremeev.model;
 
-import java.util.Arrays;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
 
@@ -8,29 +9,22 @@ public class User {
 
     private int id;
     private String login;
-    private char[] password;
+    private String password;
     private String name;
     private Date regDate;
 
     public User() {
     }
 
-    // For registration
-    public User(String login, char[] password, String name) {
+    // Registration constructor
+    public User(String login, String password, String name) {
         this.login = login;
         this.password = password;
         this.name = name;
+        this.regDate = new Date();
     }
 
-    public User(String login, char[] password, String name, Date regDate) {
-        this.login = login;
-        this.password = password;
-        this.name = name;
-        this.regDate = regDate;
-    }
-
-    public User(int id, String login, char[] password, String name, Date regDate) {
-        this.id = id;
+    public User(String login, String password, String name, Date regDate) {
         this.login = login;
         this.password = password;
         this.name = name;
@@ -53,11 +47,11 @@ public class User {
         this.login = login;
     }
 
-    public char[] getPassword() {
+    public String getPassword() {
         return password;
     }
 
-    public void setPassword(char[] password) {
+    public void setPassword(String password) {
         this.password = password;
     }
 
@@ -82,24 +76,23 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return id == user.id && Objects.equals(login, user.login) && Arrays.equals(password, user.password) && Objects.equals(name, user.name) && Objects.equals(regDate, user.regDate);
+        return id == user.id && Objects.equals(login, user.login) && Objects.equals(password, user.password) && Objects.equals(name, user.name) && Objects.equals(regDate, user.regDate);
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(id, login, name, regDate);
-        result = 31 * result + Arrays.hashCode(password);
-        return result;
+        return Objects.hash(id, login, password, name, regDate);
     }
 
     @Override
     public String toString() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         return "User{" +
                 "id=" + id +
                 ", login='" + login + '\'' +
-                ", password=" + Arrays.toString(password) +
+                ", password=" + password.replaceAll(".*", "*") +
                 ", name='" + name + '\'' +
-                ", regDate=" + regDate +
+                ", regDate=" + dateFormat.format(regDate) +
                 '}';
     }
 }
