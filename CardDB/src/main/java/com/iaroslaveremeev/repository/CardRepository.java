@@ -41,6 +41,7 @@ public class CardRepository implements AutoCloseable {
         return false;
     }
 
+    // Get card by its id
     public Card get(int id) {
         String sql = "select * from cards where cards.id=?";
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
@@ -52,11 +53,9 @@ public class CardRepository implements AutoCloseable {
             card.setQuestion(resultSet.getString(1));
             card.setAnswer(resultSet.getString(2));
             card.setCategoryId(resultSet.getInt(3));
-            card.setCreationDate(resultSet.getDate(4));
+            card.setCreationDate(resultSet.getTimestamp(4));
             return card;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        } catch (SQLException ignored) {}
         return null;
     }
 

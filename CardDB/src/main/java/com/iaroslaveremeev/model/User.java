@@ -22,6 +22,7 @@ public class User {
         this.login = login;
         this.password = password;
         this.name = name;
+        this.regDate = new Date();
     }
 
     public User(String login, String password, String name, Date regDate) {

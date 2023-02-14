@@ -24,7 +24,7 @@ public class UserRepository implements AutoCloseable {
         user.setLogin(resultSet.getString(2));
         user.setPassword(resultSet.getString(3));
         user.setName(resultSet.getString(4));
-        user.setRegDate(resultSet.getDate(5));
+        user.setRegDate(resultSet.getTimestamp(5));
         return user;
     }
 

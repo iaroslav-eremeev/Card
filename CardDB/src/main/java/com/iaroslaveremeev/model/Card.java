@@ -21,6 +21,7 @@ public class Card {
         this.question = question;
         this.answer = answer;
         this.categoryId = categoryId;
+        this.creationDate = new Date();
     }
 
     public Card(String question, String answer, int categoryId, Date creationDate) {

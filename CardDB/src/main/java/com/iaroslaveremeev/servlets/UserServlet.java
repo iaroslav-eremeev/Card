@@ -25,8 +25,6 @@ public class UserServlet extends HttpServlet {
             if (id != null){
                 User user = userRepository.get(Integer.parseInt(id));
                 if (user != null) {
-                    // Проверка toString
-                    resp.getWriter().println(user);
                     resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(user)));
                 }
                 else {
