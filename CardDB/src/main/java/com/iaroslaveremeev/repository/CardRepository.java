@@ -96,11 +96,10 @@ public class CardRepository implements AutoCloseable {
     }
 
     // Update card by its id
-    public boolean update(int id) throws SQLException {
+    public boolean update(Card card) throws SQLException {
         String sql = "update cards set cards.question=?, cards.answer=?, cards.creationDate=? " +
                 "where cards.id=?";
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
-            Card card = get(id);
             preparedStatement.setString(1, card.getQuestion());
             preparedStatement.setString(2, card.getAnswer());
             preparedStatement.setTimestamp(3, new Timestamp(card.getCreationDate().getTime()));
@@ -111,10 +110,10 @@ public class CardRepository implements AutoCloseable {
     }
 
     // Delete card by its id
-    public boolean delete(int id) {
+    public boolean delete(Card card) {
         String sql = "delete from cards where cards.id=?";
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
-            preparedStatement.setInt(1, id);
+            preparedStatement.setInt(1, card.getId());
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException ignored) {}
         return false;

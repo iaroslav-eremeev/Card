@@ -129,7 +129,7 @@ public class CardServlet extends HttpServlet {
                 if (oldCard != null){
                     Card newCard = new Card(Integer.parseInt(id), question, answer,
                             Integer.parseInt(categoryId), new Timestamp(Long.parseLong(creationDate)));
-                    cardRepository.update(Integer.parseInt(id));
+                    cardRepository.update(newCard);
                     resp.getWriter()
                             .println(objectMapper.writeValueAsString(new ResponseResult<>(newCard)));
                 }

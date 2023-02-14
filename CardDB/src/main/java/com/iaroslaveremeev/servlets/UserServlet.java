@@ -79,7 +79,7 @@ public class UserServlet extends HttpServlet {
             if(id != null){
                 User userToDelete = userRepository.get(Integer.parseInt(id));
                 if (userToDelete != null){
-                    userRepository.delete(Integer.parseInt(id));
+                    userRepository.delete(userToDelete);
                     resp.getWriter()
                             .println(objectMapper.writeValueAsString(new ResponseResult<>(userToDelete)));
                 }

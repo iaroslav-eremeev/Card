@@ -111,7 +111,7 @@ public class CategoryServlet extends HttpServlet {
                     if (userRepository.get(Integer.parseInt(userId)) != null){
                         Category newCategory =
                                 new Category(Integer.parseInt(id), name, Integer.parseInt(userId));
-                        categoryRepository.update(Integer.parseInt(id));
+                        categoryRepository.update(newCategory);
                         resp.getWriter()
                             .println(objectMapper.writeValueAsString(new ResponseResult<>(newCategory)));
                     }
@@ -145,7 +145,7 @@ public class CategoryServlet extends HttpServlet {
             try (CategoryRepository categoryRepository = new CategoryRepository()) {
                 Category categoryToDelete = categoryRepository.get(Integer.parseInt(id));
                 if (categoryToDelete != null) {
-                    categoryRepository.delete(categoryToDelete.getId());
+                    categoryRepository.delete(categoryToDelete);
                     resp.getWriter()
                             .println(objectMapper.writeValueAsString(new ResponseResult<>(categoryToDelete)));
                 } else {

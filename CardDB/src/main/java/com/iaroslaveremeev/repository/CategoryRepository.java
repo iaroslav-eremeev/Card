@@ -73,23 +73,22 @@ public class CategoryRepository implements AutoCloseable {
     }
 
     // Update category by its id
-    public boolean update(int id) {
+    public boolean update(Category category) {
         String sql = "update categories set categories.name=?, categories.userId=? where categories.id=?";
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
-            Category category = get(id);
             preparedStatement.setString(1, category.getName());
             preparedStatement.setInt(2, category.getUserId());
-            preparedStatement.setInt(3, id);
+            preparedStatement.setInt(3, category.getId());
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException ignored) {}
         return false;
     }
 
     // Delete category by its id
-    public boolean delete(int id) {
+    public boolean delete(Category category) {
         String sql = "delete from categories where categories.id=?";
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
-            preparedStatement.setInt(1, id);
+            preparedStatement.setInt(1, category.getId());
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException ignored) {}
         return false;
