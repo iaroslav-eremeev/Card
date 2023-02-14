@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 
 @WebServlet("/cards")
@@ -119,6 +120,32 @@ public class CardServlet extends HttpServlet {
         String id = req.getParameter("id");
         String question = req.getParameter("question");
         String answer = req.getParameter("answer");
+        String categoryId = req.getParameter("categoryId");
         String creationDate = req.getParameter("creationDate");
+        if (id != null && question != null && answer != null && categoryId != null && creationDate != null){
+            try (CardRepository cardRepository = new CardRepository();
+                CategoryRepository categoryRepository = new CategoryRepository()){
+                Card oldCard = cardRepository.get(Integer.parseInt(id));
+                if (oldCard != null){
+                    Card newCard = new Card(Integer.parseInt(id), question, answer,
+                            Integer.parseInt(categoryId), new Timestamp(Long.parseLong(creationDate)));
+                    cardRepository.update(Integer.parseInt(id));
+                    resp.getWriter()
+                            .println(objectMapper.writeValueAsString(new ResponseResult<>(newCard)));
+                }
+                else {
+                    resp.setStatus(400);
+                    resp.getWriter().println("There is no category with such id!");
+                }
+            }
+            catch (Exception e){
+                resp.setStatus(400);
+                resp.getWriter().println("Database loading failed. Check connection");
+            }
+        }
+        else {
+            resp.setStatus(400);
+            resp.getWriter().println("Incorrect parameters input");
+        }
     }
 }

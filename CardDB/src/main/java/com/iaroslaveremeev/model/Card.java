@@ -12,10 +12,17 @@ public class Card {
     private String question;
     private String answer;
     private int categoryId;
-
     private java.util.Date creationDate;
 
     public Card() {
+    }
+
+    public Card(int id, String question, String answer, int categoryId, Date creationDate) {
+        this.id = id;
+        this.question = question;
+        this.answer = answer;
+        this.categoryId = categoryId;
+        this.creationDate = creationDate;
     }
 
     public Card(String question, String answer, int categoryId) {
