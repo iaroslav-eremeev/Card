@@ -135,7 +135,7 @@ public class CategoryServlet extends HttpServlet {
         }
     }
 
-    //
+    // Delete category by its id
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         Unicode.setUnicode(req, resp);

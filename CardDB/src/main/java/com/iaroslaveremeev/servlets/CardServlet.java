@@ -3,7 +3,6 @@ package com.iaroslaveremeev.servlets;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iaroslaveremeev.dto.ResponseResult;
 import com.iaroslaveremeev.model.Card;
-import com.iaroslaveremeev.model.Category;
 import com.iaroslaveremeev.repository.CardRepository;
 import com.iaroslaveremeev.repository.CategoryRepository;
 import com.iaroslaveremeev.repository.UserRepository;
@@ -146,6 +145,33 @@ public class CardServlet extends HttpServlet {
         else {
             resp.setStatus(400);
             resp.getWriter().println("Incorrect parameters input");
+        }
+    }
+
+    @Override
+    protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        Unicode.setUnicode(req, resp);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String id = req.getParameter("id");
+        if (id != null) {
+            try (CardRepository cardRepository = new CardRepository()) {
+                Card cardToDelete = cardRepository.get(Integer.parseInt(id));
+                if (cardToDelete != null) {
+                    cardRepository.delete(cardToDelete);
+                    resp.getWriter()
+                            .println(objectMapper.writeValueAsString(new ResponseResult<>(cardToDelete)));
+                } else {
+                    resp.setStatus(400);
+                    resp.getWriter().println("There is no card with such id!");
+                }
+            } catch (Exception e) {
+                resp.setStatus(400);
+                resp.getWriter().println("Database loading failed. Check connection");
+            }
+        }
+        else {
+            resp.setStatus(400);
+            resp.getWriter().println("Incorrect id input");
         }
     }
 }
