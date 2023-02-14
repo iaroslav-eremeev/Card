@@ -12,7 +12,7 @@ public class CardRepository implements AutoCloseable {
 
     private Connection conn;
 
-    public CardRepository() throws SQLException, ClassNotFoundException {
+    public CardRepository() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
             this.conn = DriverManager.getConnection(Constants.DB_URL,
@@ -49,96 +49,76 @@ public class CardRepository implements AutoCloseable {
             ResultSet resultSet = preparedStatement.executeQuery();
             if (!resultSet.next())
                 return null;
-            Card card = new Card();
-            card.setQuestion(resultSet.getString(1));
-            card.setAnswer(resultSet.getString(2));
-            card.setCategoryId(resultSet.getInt(3));
-            card.setCreationDate(resultSet.getTimestamp(4));
+            Card card = newCardForList(resultSet);
             return card;
-        } catch (SQLException ignored) {}
-        return null;
-    }
-
-    public Card getByCategoryId(int categoryId) {
-        String sql = "select * from cards where cards.categoryId=?";
-        try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
-            preparedStatement.setInt(1, categoryId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (!resultSet.next())
-                return null;
-            Card card = new Card();
-            card.setId(resultSet.getInt(1));
-            card.setQuestion(resultSet.getString(2));
-            card.setAnswer(resultSet.getString(3));
-            card.setCategoryId(resultSet.getInt(4));
-            card.setCreationDate(resultSet.getDate(5));
-            return card;
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ignored) {
         }
         return null;
     }
 
-    //TODO Проработать доступ к user (запрос SQL с join'ом)
-    public Card getByUserId(int userId) {
-        String sql = "select * from cards where cards.categoryId=?";
-        try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
-            preparedStatement.setInt(1, userId);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (!resultSet.next())
-                return null;
-            Card card = new Card();
-            card.setId(resultSet.getInt(1));
-            card.setQuestion(resultSet.getString(2));
-            card.setAnswer(resultSet.getString(3));
-            card.setCategoryId(resultSet.getInt(4));
-            card.setCreationDate(resultSet.getDate(5));
-            return card;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
+    // Create new card from SQL response ResultSet
+    private Card newCardForList(ResultSet resultSet) throws SQLException {
+        Card card = new Card();
+        card.setId(resultSet.getInt(1));
+        card.setQuestion(resultSet.getString(2));
+        card.setAnswer(resultSet.getString(3));
+        card.setCategoryId(resultSet.getInt(4));
+        card.setCreationDate(resultSet.getTimestamp(5));
+        return card;
     }
-/*
-    public List<Category> getAll() throws SQLException {
-        String sql = "select * from categories";
-        ArrayList<Category> categories = new ArrayList<>();
+
+    // Get ArrayList of cards by User of Category id
+    private ArrayList<Card> getCards(int id, String sql) {
+        ArrayList<Card> cards = new ArrayList<>();
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
+            preparedStatement.setInt(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                Category category = new Category();
-                category.setId(resultSet.getInt(1));
-                category.setName(resultSet.getString(2));
-                category.setUserId(resultSet.getInt(3));
-                categories.add(category);
+                cards.add(newCardForList(resultSet));
             }
-        } catch (SQLException e) {
-            throw new SQLException(e.getMessage());
-        }
-        return categories;
+        } catch (SQLException ignored) {}
+        return cards;
     }
 
-    public boolean update(Category category) throws SQLException {
-        String sql = "update categories set categories.name=?, categories.userId=? where categories.id=?";
+    // Get ArrayList of cards by Category id
+    public ArrayList<Card> getCardsByCatId(int categoryId) {
+        String sql = "select * from cards where cards.categoryId=?";
+        return getCards(categoryId, sql);
+    }
+
+    // Get ArrayList of cards by User id
+    public ArrayList<Card> getCardsByUserId(int userId) {
+        String sql = "select * from cards\n" +
+                "    join categories c on cards.categoryId = c.id\n" +
+                "    join users u on u.id = c.userId\n" +
+                "    where userId=?";
+        return getCards(userId, sql);
+    }
+
+    // Update card by its id
+    public boolean update(int id) throws SQLException {
+        String sql = "update cards set cards.question=?, cards.answer=?, cards.creationDate=? " +
+                "where cards.id=?";
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
-            preparedStatement.setString(1, category.getName());
-            preparedStatement.setInt(2, category.getUserId());
-            preparedStatement.setInt(3, category.getId());
+            Card card = get(id);
+            preparedStatement.setString(1, card.getQuestion());
+            preparedStatement.setString(2, card.getAnswer());
+            preparedStatement.setTimestamp(3, new Timestamp(card.getCreationDate().getTime()));
+            preparedStatement.setInt(4, card.getId());
             return preparedStatement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            throw new SQLException(e.getMessage());
-        }
+        } catch (SQLException ignored) {}
+        return false;
     }
 
-    //TODO добавить каскадное удаление данных
+    // Delete card by its id
     public boolean delete(int id) {
-        String sql = "delete from categories where categories.id=?";
+        String sql = "delete from cards where cards.id=?";
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
             preparedStatement.setInt(1, id);
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException ignored) {}
         return false;
-    }*/
+    }
 
     // Close connection
     public void close() {

@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 
 @WebServlet("/cards")
 public class CardServlet extends HttpServlet {
@@ -49,5 +50,75 @@ public class CardServlet extends HttpServlet {
             resp.setStatus(400);
             resp.getWriter().println("Incorrect card question, answer or category id input");
         }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+       Unicode.setUnicode(req, resp);
+       ObjectMapper objectMapper = new ObjectMapper();
+       String id = req.getParameter("id");
+       String categoryId = req.getParameter("categoryId");
+       String userId = req.getParameter("userId");
+       if (id != null){
+           try (CardRepository cardRepository = new CardRepository()){
+               Card card = cardRepository.get(Integer.parseInt(id));
+               if (card != null){
+                   resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(card)));
+               }
+               else {
+                   resp.setStatus(400);
+                   resp.getWriter().println("There is no card with such id!");
+               }
+           } catch (Exception e){
+               resp.setStatus(400);
+               resp.getWriter().println("Database loading failed. Check connection");
+           }
+       }
+       else if (categoryId != null){
+           try (CardRepository cardRepository = new CardRepository();
+                CategoryRepository categoryRepository = new CategoryRepository()){
+                if (categoryRepository.get(Integer.parseInt(categoryId)) != null){
+                    ArrayList<Card> cards = cardRepository.getCardsByCatId(Integer.parseInt(categoryId));
+                    resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(cards)));
+                }
+                else {
+                    resp.setStatus(400);
+                    resp.getWriter().println("There is no category with such id!");
+                }
+           } catch (Exception e){
+               resp.setStatus(400);
+               resp.getWriter().println("Database loading failed. Check connection");
+           }
+       }
+       else if (userId != null){
+           try (CardRepository cardRepository = new CardRepository();
+                UserRepository userRepository = new UserRepository()){
+               if (userRepository.get(Integer.parseInt(userId)) != null){
+                   ArrayList<Card> cards = cardRepository.getCardsByUserId(Integer.parseInt(userId));
+                   resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(cards)));
+               }
+               else {
+                   resp.setStatus(400);
+                   resp.getWriter().println("There is no user with such id!");
+               }
+           } catch (Exception e){
+               resp.setStatus(400);
+               resp.getWriter().println("Database loading failed. Check connection");
+           }
+       }
+       else {
+            resp.setStatus(400);
+            resp.getWriter().println("Incorrect id input");
+       }
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        Unicode.setUnicode(req, resp);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String id = req.getParameter("id");
+        String question = req.getParameter("question");
+        String answer = req.getParameter("answer");
+        String creationDate = req.getParameter("creationDate");
     }
 }

@@ -36,6 +36,15 @@ public class CategoryRepository implements AutoCloseable {
         return false;
     }
 
+    // Create new category from SQL response ResultSet
+    private Category newCategory(ResultSet resultSet) throws SQLException {
+        Category category = new Category();
+        category.setId(resultSet.getInt(1));
+        category.setName(resultSet.getString(2));
+        category.setUserId(resultSet.getInt(3));
+        return category;
+    }
+
     // Get category by its id
     public Category get(int id) {
         String sql = "select * from categories where categories.id=?";
@@ -44,11 +53,7 @@ public class CategoryRepository implements AutoCloseable {
             ResultSet resultSet = preparedStatement.executeQuery();
             if (!resultSet.next())
                 return null;
-            Category category = new Category();
-            category.setId(resultSet.getInt(1));
-            category.setName(resultSet.getString(2));
-            category.setUserId(resultSet.getInt(3));
-            return category;
+            return newCategory(resultSet);
         } catch (SQLException ignored) {}
         return null;
     }
@@ -60,21 +65,15 @@ public class CategoryRepository implements AutoCloseable {
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
             preparedStatement.setInt(1, userId);
             ResultSet resultSet = preparedStatement.executeQuery();
-            if (!resultSet.next())
-                return null;
             while (resultSet.next()) {
-                Category category = new Category();
-                category.setId(resultSet.getInt(1));
-                category.setName(resultSet.getString(2));
-                category.setUserId(resultSet.getInt(3));
-                categories.add(category);
+                categories.add(newCategory(resultSet));
             }
         } catch (SQLException ignored) {}
         return categories;
     }
 
     // Update category by its id
-    public boolean update(int id) throws SQLException {
+    public boolean update(int id) {
         String sql = "update categories set categories.name=?, categories.userId=? where categories.id=?";
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
             Category category = get(id);
@@ -82,9 +81,8 @@ public class CategoryRepository implements AutoCloseable {
             preparedStatement.setInt(2, category.getUserId());
             preparedStatement.setInt(3, id);
             return preparedStatement.executeUpdate() > 0;
-        } catch (SQLException e) {
-            throw new SQLException(e.getMessage());
-        }
+        } catch (SQLException ignored) {}
+        return false;
     }
 
     // Delete category by its id

@@ -41,3 +41,18 @@ create table if not exists card.cards
 
 create index categoryId
     on card.cards (categoryId);
+
+select * from users;
+
+select * from categories;
+
+select * from cards where cards.categoryId=3;
+
+select * from cards
+join categories c on cards.categoryId = c.id
+where categoryId=3;
+
+select * from cards
+join categories c on cards.categoryId = c.id
+join users u on u.id = c.userId
+where userId=6;
