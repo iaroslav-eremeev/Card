@@ -1,4 +1,53 @@
 package com.iaroslaveremeev.servlets;
 
-public class CardServlet {
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.iaroslaveremeev.dto.ResponseResult;
+import com.iaroslaveremeev.model.Card;
+import com.iaroslaveremeev.model.Category;
+import com.iaroslaveremeev.repository.CardRepository;
+import com.iaroslaveremeev.repository.CategoryRepository;
+import com.iaroslaveremeev.repository.UserRepository;
+import com.iaroslaveremeev.util.Unicode;
+
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+
+@WebServlet("/cards")
+public class CardServlet extends HttpServlet {
+
+    // Add card to the category with certain id
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        Unicode.setUnicode(req, resp);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String question = req.getParameter("question");
+        String answer = req.getParameter("answer");
+        String categoryId = req.getParameter("categoryId");
+        if(question != null && answer != null && categoryId != null) {
+            try (CardRepository cardRepository = new CardRepository();
+                 CategoryRepository categoryRepository = new CategoryRepository()) {
+                // Check if category with such id exists
+                if (categoryRepository.get(Integer.parseInt(categoryId)) != null) {
+                    Card card = new Card(question, answer, Integer.parseInt(categoryId));
+                    cardRepository.addCard(card);
+                    resp.getWriter()
+                            .println(objectMapper.writeValueAsString(new ResponseResult<>(card)));
+
+                } else {
+                    resp.setStatus(400);
+                    resp.getWriter().println("There is no category with such id!");
+                }
+            } catch (Exception e){
+                resp.setStatus(400);
+                resp.getWriter().println("Database loading failed. Check connection");
+            }
+        }
+        else {
+            resp.setStatus(400);
+            resp.getWriter().println("Incorrect card question, answer or category id input");
+        }
+    }
 }

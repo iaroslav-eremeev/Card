@@ -13,19 +13,22 @@ public class CardRepository implements AutoCloseable {
     private Connection conn;
 
     public CardRepository() throws SQLException, ClassNotFoundException {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        this.conn = DriverManager.getConnection(Constants.DB_URL,
-                Constants.USERNAME, Constants.PASSWORD);
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            this.conn = DriverManager.getConnection(Constants.DB_URL,
+                    Constants.USERNAME, Constants.PASSWORD);
+        } catch (ClassNotFoundException | SQLException ignored) {}
     }
 
-    public boolean addCategoryCard(Card card){
+    // Add card to a category
+    public boolean addCard(Card card){
         String sql = "insert into cards(question, answer, categoryId, creationDate) values (?,?,?,?)";
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, card.getQuestion());
             preparedStatement.setString(2, card.getAnswer());
             preparedStatement.setInt(3, card.getCategoryId());
-            preparedStatement.setDate(4, card.getCreationDate());
+            preparedStatement.setTimestamp(4, new Timestamp(card.getCreationDate().getTime()));
             int row = preparedStatement.executeUpdate();
             if (row <= 0)
                 return false;
@@ -34,9 +37,7 @@ public class CardRepository implements AutoCloseable {
                     card.setId(generatedKeys.getInt(1));
             }
             return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        } catch (SQLException ignored) {}
         return false;
     }
 
@@ -140,8 +141,11 @@ public class CardRepository implements AutoCloseable {
         return false;
     }*/
 
-    public void close() throws Exception {
-        if (this.conn != null)
-            this.conn.close();
+    // Close connection
+    public void close() {
+        try {
+            if (this.conn != null)
+                this.conn.close();
+        } catch (Exception ignored) {}
     }
 }

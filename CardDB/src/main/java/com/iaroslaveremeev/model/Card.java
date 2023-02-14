@@ -1,6 +1,8 @@
 package com.iaroslaveremeev.model;
 
-import java.sql.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Objects;
 
 public class Card {
@@ -9,17 +11,16 @@ public class Card {
     private String question;
     private String answer;
     private int categoryId;
-    private Date creationDate;
+
+    private java.util.Date creationDate;
 
     public Card() {
     }
 
-    public Card(int id, String question, String answer, int categoryId, Date creationDate) {
-        this.id = id;
+    public Card(String question, String answer, int categoryId) {
         this.question = question;
         this.answer = answer;
         this.categoryId = categoryId;
-        this.creationDate = creationDate;
     }
 
     public Card(String question, String answer, int categoryId, Date creationDate) {
@@ -84,12 +85,13 @@ public class Card {
 
     @Override
     public String toString() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         return "Card{" +
                 "id=" + id +
                 ", question='" + question + '\'' +
                 ", answer='" + answer + '\'' +
                 ", categoryId=" + categoryId +
-                ", creationDate=" + creationDate +
+                ", creationDate=" + dateFormat.format(creationDate) +
                 '}';
     }
 }
