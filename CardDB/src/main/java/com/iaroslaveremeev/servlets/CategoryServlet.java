@@ -5,155 +5,161 @@ import com.iaroslaveremeev.dto.ResponseResult;
 import com.iaroslaveremeev.model.Category;
 import com.iaroslaveremeev.repository.CategoryRepository;
 import com.iaroslaveremeev.repository.UserRepository;
+import com.iaroslaveremeev.util.Unicode;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.rmi.NoSuchObjectException;
-import java.sql.SQLException;
+import java.util.List;
 
 @WebServlet("/categories")
 public class CategoryServlet extends HttpServlet {
 
-    protected void setUnicode(HttpServletRequest req, HttpServletResponse resp)
-            throws UnsupportedEncodingException {
-        resp.setCharacterEncoding("utf-8");
-        resp.setContentType("text/html;charset=utf-8");
-        req.setCharacterEncoding("utf-8");
-    }
-
+    // Get all the categories for selected user by their id
+    // Get category by its id
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        setUnicode(req, resp);
+        Unicode.setUnicode(req, resp);
         ObjectMapper objectMapper = new ObjectMapper();
         String id = req.getParameter("id");
         String userId = req.getParameter("userId");
-        try {
-            CategoryRepository categoryRepository = new CategoryRepository();
-            if (id != null){
-                try {
+        if (id != null || userId != null){
+            try (CategoryRepository categoryRepository = new CategoryRepository()){
+                // Get category by its id
+                if (id != null){
                     Category category = categoryRepository.get(Integer.parseInt(id));
-                    if (category == null) throw new NoSuchObjectException("There is no category with such id!");
-                    resp.getWriter()
-                            .println(objectMapper.writeValueAsString(new ResponseResult<>(category)));
-                }
-                catch (RuntimeException | NoSuchObjectException e) {
-                    resp.setStatus(400);
-                    resp.getWriter()
-                            .println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
-                }
-            }
-            else if (userId != null){
-                try {
-                    Category category = categoryRepository.getByUserId(Integer.parseInt(userId));
-                    if (category == null)
-                        throw new NoSuchObjectException("There is no category with such user id!");
-                    resp.getWriter()
-                            .println(objectMapper.writeValueAsString(new ResponseResult<>(category)));
-                }
-                catch (RuntimeException | NoSuchObjectException e) {
-                    resp.setStatus(400);
-                    resp.getWriter()
-                            .println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
-                }
-            }
-            else
-                try {
-                    resp.getWriter()
-                            .println(objectMapper
-                                    .writeValueAsString(new ResponseResult<>(categoryRepository.getAll())));
-                }
-                catch (RuntimeException | NoSuchObjectException e) {
-                    resp.setStatus(400);
-                    resp.getWriter()
-                            .println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
-                }
-        } catch (SQLException | ClassNotFoundException | IOException e) {
-            resp.setStatus(400);
-            resp.getWriter()
-                    .println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
-        }
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        setUnicode(req, resp);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String name = req.getParameter("name");
-        String userId = req.getParameter("userId");
-        if(name != null && userId != null) {
-            try {
-                CategoryRepository categoryRepository = new CategoryRepository();
-                UserRepository userRepository = new UserRepository();
-                for (int i = 0; i < userRepository.getAll().size(); i++) {
-                    if (userRepository.getAll().get(i).getId() == Integer.parseInt(userId)){
-                        Category category = new Category(name, Integer.parseInt(userId));
-                        categoryRepository.addUserCategory(category);
+                    if (category != null){
                         resp.getWriter()
                                 .println(objectMapper.writeValueAsString(new ResponseResult<>(category)));
                     }
+                    else {
+                        resp.setStatus(400);
+                        resp.getWriter().println("No category with such id found!");
+                    }
                 }
-            } catch (SQLException | ClassNotFoundException e) {
+                // get all the categories for selected user by their id
+                else if (userId != null){
+                    List<Category> categories = categoryRepository
+                            .getCategoriesByUserId(Integer.parseInt(userId));
+                    if (categories.size() > 0){
+                        resp.getWriter()
+                                .println(objectMapper.writeValueAsString(new ResponseResult<>(categories)));
+                    }
+                    else {
+                        resp.setStatus(400);
+                        resp.getWriter().println("The selected user has no categories!");
+                    }
+                }
+            } catch (Exception e) {
                 resp.setStatus(400);
-                resp.getWriter()
-                        .println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
+                resp.getWriter().println("Database loading failed. Check connection");
             }
         }
         else {
             resp.setStatus(400);
-            resp.getWriter()
-                    .println(objectMapper.writeValueAsString(new ResponseResult<>("Incorrect input")));
+            resp.getWriter().println("Incorrect id or user id input");
         }
     }
 
+    // Add category to user with certain id
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        Unicode.setUnicode(req, resp);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String name = req.getParameter("name");
+        String userId = req.getParameter("userId");
+        if(name != null && userId != null) {
+            try (CategoryRepository categoryRepository = new CategoryRepository();
+                 UserRepository userRepository = new UserRepository()) {
+                // Check if user with such id exists
+                if (userRepository.get(Integer.parseInt(userId)) != null) {
+                    Category category = new Category(name, Integer.parseInt(userId));
+                    categoryRepository.addCategory(category);
+                    resp.getWriter()
+                            .println(objectMapper.writeValueAsString(new ResponseResult<>(category)));
+
+                } else {
+                    resp.setStatus(400);
+                    resp.getWriter().println("There is no user with such id!");
+                }
+            } catch (Exception e){
+                resp.setStatus(400);
+                resp.getWriter().println("Database loading failed. Check connection");
+            }
+        }
+        else {
+            resp.setStatus(400);
+            resp.getWriter().println("Incorrect category name or user id input");
+        }
+    }
+
+    // Update category by its id
     @Override
     protected void doPut(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        setUnicode(req, resp);
+        Unicode.setUnicode(req, resp);
         ObjectMapper objectMapper = new ObjectMapper();
         String id = req.getParameter("id");
         String name = req.getParameter("name");
         String userId = req.getParameter("userId");
         if(id != null & name != null && userId != null) {
-            try {
-                CategoryRepository categoryRepository = new CategoryRepository();
-                Category newCategory = new Category(Integer.parseInt(id), name, Integer.parseInt(userId));
-                categoryRepository.update(newCategory);
-                resp.getWriter()
-                        .println(objectMapper.writeValueAsString(new ResponseResult<>(newCategory)));
+            try (CategoryRepository categoryRepository = new CategoryRepository();
+                    UserRepository userRepository = new UserRepository()){
+                Category oldCategory = categoryRepository.get(Integer.parseInt(id));
+                if (oldCategory != null){
+                    if (userRepository.get(Integer.parseInt(userId)) != null){
+                        Category newCategory =
+                                new Category(Integer.parseInt(id), name, Integer.parseInt(userId));
+                        categoryRepository.update(Integer.parseInt(id));
+                        resp.getWriter()
+                            .println(objectMapper.writeValueAsString(new ResponseResult<>(newCategory)));
+                    }
+                    else {
+                        resp.setStatus(400);
+                        resp.getWriter().println("There is no user with such user id!");
+                    }
+                }
+                else {
+                    resp.setStatus(400);
+                    resp.getWriter().println("There is no category to update with such id!");
+                }
             } catch (Exception e) {
                 resp.setStatus(400);
-                resp.getWriter()
-                        .println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
+                resp.getWriter().println("Database loading failed. Check connection");
             }
+        }
+        else {
+            resp.setStatus(400);
+            resp.getWriter().println("Incorrect category id, name or user id input");
         }
     }
 
-    //TODO Добавить каскадное удаление данных
+    //
     @Override
     protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        setUnicode(req, resp);
+        Unicode.setUnicode(req, resp);
         ObjectMapper objectMapper = new ObjectMapper();
         String id = req.getParameter("id");
-        try {
-            CategoryRepository categoryRepository = new CategoryRepository();
-            if(id != null){
-                try {
-                    Category categoryToDelete = categoryRepository.get(Integer.parseInt(id));
-                    if (categoryToDelete == null) throw new NoSuchObjectException("No category with such id!");
+        if (id != null) {
+            try (CategoryRepository categoryRepository = new CategoryRepository()) {
+                Category categoryToDelete = categoryRepository.get(Integer.parseInt(id));
+                if (categoryToDelete != null) {
                     categoryRepository.delete(categoryToDelete.getId());
                     resp.getWriter()
                             .println(objectMapper.writeValueAsString(new ResponseResult<>(categoryToDelete)));
-                } catch (RuntimeException | NoSuchObjectException e) {
+                } else {
                     resp.setStatus(400);
-                    resp.getWriter()
-                            .println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
+                    resp.getWriter().println("There is no category with such id!");
                 }
+            } catch (Exception e) {
+                resp.setStatus(400);
+                resp.getWriter().println("Database loading failed. Check connection");
             }
-        } catch (Exception e) {
-            resp.getWriter().println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
+        }
+        else {
+            resp.setStatus(400);
+            resp.getWriter().println("Incorrect id input");
         }
     }
 }

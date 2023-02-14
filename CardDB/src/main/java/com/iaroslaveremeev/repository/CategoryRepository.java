@@ -10,34 +10,33 @@ import java.util.List;
 public class CategoryRepository implements AutoCloseable {
 
     private Connection conn;
-
-    // Конструктор не должен бросать ошибки SQL
-    // Репозиторий и сервлет не имеет отношения к базе данных
-    public CategoryRepository() throws SQLException, ClassNotFoundException {
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        this.conn = DriverManager.getConnection(Constants.DB_URL,
-                Constants.USERNAME, Constants.PASSWORD);
+    public CategoryRepository() {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            this.conn = DriverManager.getConnection(Constants.DB_URL,
+                    Constants.USERNAME, Constants.PASSWORD);
+        } catch (ClassNotFoundException | SQLException ignored) {}
     }
-    public boolean addUserCategory(Category category){
+
+    // Add user category
+    public boolean addCategory(Category category){
         String sql = "insert into categories(name, userId) values (?,?)";
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql,
                 Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, category.getName());
             preparedStatement.setInt(2, category.getUserId());
             int row = preparedStatement.executeUpdate();
-            if (row <= 0)
-                return false;
+            if (row <= 0) return false;
             try (ResultSet generatedKeys = preparedStatement.getGeneratedKeys()) {
                 if (generatedKeys.next())
                     category.setId(generatedKeys.getInt(1));
             }
             return true;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        } catch (SQLException ignored) {}
         return false;
     }
 
+    // Get category by its id
     public Category get(int id) {
         String sql = "select * from categories where categories.id=?";
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
@@ -50,35 +49,19 @@ public class CategoryRepository implements AutoCloseable {
             category.setName(resultSet.getString(2));
             category.setUserId(resultSet.getInt(3));
             return category;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        } catch (SQLException ignored) {}
         return null;
     }
 
-    public Category getByUserId(int userId) {
+    // Get list of categories by user id
+    public List<Category> getCategoriesByUserId(int userId) throws SQLException {
         String sql = "select * from categories where categories.userId=?";
+        ArrayList<Category> categories = new ArrayList<>();
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
             preparedStatement.setInt(1, userId);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (!resultSet.next())
                 return null;
-            Category category = new Category();
-            category.setId(resultSet.getInt(1));
-            category.setName(resultSet.getString(2));
-            category.setUserId(resultSet.getInt(3));
-            return category;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public List<Category> getAll() throws SQLException {
-        String sql = "select * from categories";
-        ArrayList<Category> categories = new ArrayList<>();
-        try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
-            ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 Category category = new Category();
                 category.setId(resultSet.getInt(1));
@@ -86,25 +69,25 @@ public class CategoryRepository implements AutoCloseable {
                 category.setUserId(resultSet.getInt(3));
                 categories.add(category);
             }
-        } catch (SQLException e) {
-            throw new SQLException(e.getMessage());
-        }
+        } catch (SQLException ignored) {}
         return categories;
     }
 
-    public boolean update(Category category) throws SQLException {
+    // Update category by its id
+    public boolean update(int id) throws SQLException {
         String sql = "update categories set categories.name=?, categories.userId=? where categories.id=?";
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
+            Category category = get(id);
             preparedStatement.setString(1, category.getName());
             preparedStatement.setInt(2, category.getUserId());
-            preparedStatement.setInt(3, category.getId());
+            preparedStatement.setInt(3, id);
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new SQLException(e.getMessage());
         }
     }
 
-    //TODO добавить каскадное удаление данных
+    // Delete category by its id
     public boolean delete(int id) {
         String sql = "delete from categories where categories.id=?";
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
@@ -114,8 +97,11 @@ public class CategoryRepository implements AutoCloseable {
         return false;
     }
 
-    public void close() throws Exception {
-        if (this.conn != null)
-            this.conn.close();
+    // Close connection
+    public void close() {
+        try {
+            if (this.conn != null)
+                this.conn.close();
+        } catch (Exception ignored) {}
     }
 }

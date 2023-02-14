@@ -4,45 +4,39 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iaroslaveremeev.dto.ResponseResult;
 import com.iaroslaveremeev.model.User;
 import com.iaroslaveremeev.repository.UserRepository;
+import com.iaroslaveremeev.util.Unicode;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 @WebServlet("/registration")
 public class RegistrationServlet extends HttpServlet {
-    protected void setUnicode(HttpServletRequest req, HttpServletResponse resp) throws UnsupportedEncodingException {
-        resp.setCharacterEncoding("utf-8");
-        resp.setContentType("text/html;charset=utf-8");
-        req.setCharacterEncoding("utf-8");
-    }
 
+    // Post method to register a new user (add new record to the users' database)
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        setUnicode(req, resp);
+        Unicode.setUnicode(req, resp);
         ObjectMapper objectMapper = new ObjectMapper();
         String login = req.getParameter("login");
         String password = req.getParameter("password");
         String name = req.getParameter("name");
         if(login != null && password != null && name != null) {
             try(UserRepository userRepository = new UserRepository()) {
-                User user = new User(login, password.toCharArray(), name);
+                User user = new User(login, password, name);
                 if (userRepository.add(user)) {
                     resp.getWriter()
                             .println(objectMapper.writeValueAsString(new ResponseResult<>(user)));
                 }
                 else {
-                    throw new RuntimeException("User not registered");
+                    resp.getWriter().println("Registration failed. Check if you used parameters correctly");
+                    resp.setStatus(400);
                 }
             } catch (Exception e) {
+                resp.getWriter().println("Database loading failed. Check connection");
                 resp.setStatus(400);
-                resp.getWriter()
-                        .println(objectMapper.writeValueAsString(new ResponseResult<>(e.getMessage())));
             }
         }
     }
