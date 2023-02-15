@@ -24,7 +24,7 @@ public class ResponseResult<T> {
     public ResponseResult() {
     }
 
-    public boolean isResult() {
+    public boolean isTrue() {
         return result;
     }
 

@@ -33,10 +33,7 @@ public class UserRepository {
                 }
             }
             return httpURLConnection.getInputStream();
-        } catch (IOException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
-            alert.show();
-        }
+        } catch (IOException ignored) {}
         return null;
     }
 
@@ -51,8 +48,27 @@ public class UserRepository {
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Registration failed!");
             alert.show();
+            return null;
         }
-        return null;
+    }
+
+    public boolean authorize(String login, String password){
+        try (InputStream inputStream = getData(Constants.SERVER_URL + "/users?" +
+                "&login=" + URLEncoder.encode(login, StandardCharsets.UTF_8) +
+                "&password=" + URLEncoder.encode(password, StandardCharsets.UTF_8), "POST")) {
+            ObjectMapper mapper = new ObjectMapper();
+            ResponseResult<User> result = mapper.readValue(inputStream, new TypeReference<>() {});
+            return result.isTrue(); // check if authorization is successful
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Connection failure!");
+            alert.show();
+            return false;
+        }
+        catch (IllegalArgumentException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Wrong login or password!");
+            alert.show();
+            return false;
+        }
     }
 
 }

@@ -52,7 +52,7 @@ public class Program extends Application {
         } catch (IOException | IllegalArgumentException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Check connection and server settings!");
             alert.show();
+            return null;
         }
-        return null;
     }
 }

@@ -25,8 +25,7 @@ public class RegController {
             Stage stage = (Stage) this.regLogin.getScene().getWindow();
             stage.close();
         } catch (Exception e){
-            e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Connection or database failure!");
             alert.show();
         }
 
