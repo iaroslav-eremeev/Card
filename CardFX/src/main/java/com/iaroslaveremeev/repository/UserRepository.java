@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iaroslaveremeev.dto.ResponseResult;
 import com.iaroslaveremeev.model.User;
 import com.iaroslaveremeev.util.Constants;
+import com.iaroslaveremeev.util.DataFromURL;
 import javafx.scene.control.Alert;
 
 import java.io.BufferedReader;
@@ -21,24 +22,8 @@ public class UserRepository {
     public UserRepository() {
     }
 
-    private static InputStream getData(String link, String method) {
-        try {
-            URL url = new URL(link);
-            HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-            httpURLConnection.setRequestMethod(method);
-            if (httpURLConnection.getResponseCode() == 400){
-                try (BufferedReader bufferedReader = new BufferedReader(
-                        new InputStreamReader(httpURLConnection.getErrorStream()))){
-                    throw new IOException(new ResponseResult<>(bufferedReader.readLine()).getMessage());
-                }
-            }
-            return httpURLConnection.getInputStream();
-        } catch (IOException ignored) {}
-        return null;
-    }
-
-    public User register(User user) throws IOException {
-        try (InputStream inputStream = getData(Constants.SERVER_URL + "/registration?" +
+    public User register(User user) {
+        try (InputStream inputStream = DataFromURL.getData(Constants.SERVER_URL + "/registration?" +
                 "&login=" + URLEncoder.encode(user.getLogin(), StandardCharsets.UTF_8) +
                 "&password=" + URLEncoder.encode(user.getPassword(), StandardCharsets.UTF_8) +
                 "&name=" + URLEncoder.encode(user.getName(), StandardCharsets.UTF_8), "POST")) {
@@ -53,7 +38,7 @@ public class UserRepository {
     }
 
     public boolean authorize(String login, String password){
-        try (InputStream inputStream = getData(Constants.SERVER_URL + "/users?" +
+        try (InputStream inputStream = DataFromURL.getData(Constants.SERVER_URL + "/users?" +
                 "&login=" + URLEncoder.encode(login, StandardCharsets.UTF_8) +
                 "&password=" + URLEncoder.encode(password, StandardCharsets.UTF_8), "POST")) {
             ObjectMapper mapper = new ObjectMapper();
