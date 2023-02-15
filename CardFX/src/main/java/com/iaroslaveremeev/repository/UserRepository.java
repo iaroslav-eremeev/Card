@@ -15,9 +15,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class UserRepository {
 
@@ -44,12 +41,10 @@ public class UserRepository {
     }
 
     public User register(User user) throws IOException {
-        try {
-            InputStream inputStream = getData(Constants.SERVER_URL + "/registration?" +
-                    "&login=" + URLEncoder.encode(user.getLogin(), StandardCharsets.UTF_8) +
-                    "&password=" + URLEncoder.encode(user.getPassword(), StandardCharsets.UTF_8) +
-                    "&name=" + URLEncoder.encode(user.getName(), StandardCharsets.UTF_8) +
-                    "&regDate=" + user.getRegDate(), "POST");
+        try (InputStream inputStream = getData(Constants.SERVER_URL + "/registration?" +
+                "&login=" + URLEncoder.encode(user.getLogin(), StandardCharsets.UTF_8) +
+                "&password=" + URLEncoder.encode(user.getPassword(), StandardCharsets.UTF_8) +
+                "&name=" + URLEncoder.encode(user.getName(), StandardCharsets.UTF_8), "POST")) {
             ObjectMapper mapper = new ObjectMapper();
             ResponseResult<User> result = mapper.readValue(inputStream, new TypeReference<>() {});
             return result.getData();

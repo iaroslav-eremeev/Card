@@ -21,12 +21,15 @@ public class Program extends Application {
             scene = new Scene(loadFXML("/mainForm"), 600, 440);
         }
         else {
-            scene = new Scene(loadFXML("/authorization"), 600, 300);
+            scene = new Scene(loadFXML("/registration"), 600, 400);
         }
         stage.setScene(scene);
         stage.show();
     }
 
+    static void setRoot(String fxml) throws IOException {
+        scene.setRoot(loadFXML(fxml));
+    }
     public static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(Program.class.getResource(fxml + ".fxml"));
         return fxmlLoader.load();

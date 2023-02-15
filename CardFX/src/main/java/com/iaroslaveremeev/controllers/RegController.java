@@ -17,10 +17,15 @@ public class RegController {
     public void signUp(ActionEvent actionEvent) {
         try {
             UserRepository userRepository = new UserRepository();
-            userRepository.register(new User(regLogin.getText(), regName.getText(), regPassword.getText()));
-            Stage stage = (Stage) regLogin.getScene().getWindow();
+            String login = this.regLogin.getText();
+            String password = this.regPassword.getText();
+            String name = this.regName.getText();
+            User user = new User(login, password, name);
+            userRepository.register(user);
+            Stage stage = (Stage) this.regLogin.getScene().getWindow();
             stage.close();
         } catch (Exception e){
+            e.printStackTrace();
             Alert alert = new Alert(Alert.AlertType.ERROR, e.getMessage());
             alert.show();
         }
