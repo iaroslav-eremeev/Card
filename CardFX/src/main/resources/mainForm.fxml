@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="439.0" prefWidth="602.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iaroslaveremeev.controllers.MainFormController">
+<VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="415.0" prefWidth="602.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.iaroslaveremeev.controllers.MainFormController">
    <children>
       <Label text="Main form">
          <font>
@@ -37,12 +37,12 @@
       </ComboBox>
       <HBox alignment="CENTER" maxHeight="100.0" prefHeight="45.0" prefWidth="600.0">
          <children>
-            <Button maxWidth="150.0" mnemonicParsing="false" onAction="#addNewCategory" prefWidth="150.0" text="Add new category">
+            <Button maxWidth="150.0" mnemonicParsing="false" onAction="#deleteChosenCategory" prefWidth="150.0" text="Delete this category">
                <HBox.margin>
                   <Insets left="10.0" right="10.0" />
                </HBox.margin>
             </Button>
-            <Button maxWidth="150.0" mnemonicParsing="false" onAction="#deleteChosenCategory" prefWidth="150.0" text="Delete this category">
+            <Button maxWidth="150.0" mnemonicParsing="false" onAction="#addNewCategory" prefWidth="150.0" text="Add new category">
                <HBox.margin>
                   <Insets left="10.0" right="10.0" />
                </HBox.margin>
@@ -94,12 +94,17 @@
       </GridPane>
       <HBox alignment="CENTER" maxHeight="100.0" prefHeight="45.0" prefWidth="600.0">
          <children>
-            <Button maxWidth="150.0" mnemonicParsing="false" onAction="#addNewCard" prefWidth="150.0" text="Add new card">
+            <Button maxWidth="150.0" mnemonicParsing="false" onAction="#updateCard" prefWidth="150.0" text="Update this card">
                <HBox.margin>
                   <Insets left="10.0" right="10.0" top="10.0" />
                </HBox.margin>
             </Button>
             <Button maxWidth="150.0" mnemonicParsing="false" onAction="#deleteChosenCard" prefWidth="150.0" text="Delete this card">
+               <HBox.margin>
+                  <Insets left="10.0" right="10.0" top="10.0" />
+               </HBox.margin>
+            </Button>
+            <Button maxWidth="150.0" mnemonicParsing="false" onAction="#addNewCard" prefWidth="150.0" text="Add new card">
                <HBox.margin>
                   <Insets left="10.0" right="10.0" top="10.0" />
                </HBox.margin>

@@ -18,7 +18,6 @@ public class MainFormController {
     public TextField question;
     public TextField answer;
     public ComboBox<Category> categoryComboBoxBottom;
-    public DatePicker date; // убрать дату (она остается после создания записи неизменной)
 
     //TODO добавить кнопку для апдейта карточек
     public void initialize(){
@@ -32,5 +31,8 @@ public class MainFormController {
     public void addNewCard(ActionEvent actionEvent) {
     }
     public void deleteChosenCard(ActionEvent actionEvent) {
+    }
+
+    public void updateCard(ActionEvent actionEvent) {
     }
 }
