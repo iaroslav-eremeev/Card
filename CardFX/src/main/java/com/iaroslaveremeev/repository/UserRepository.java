@@ -37,22 +37,35 @@ public class UserRepository {
         }
     }
 
-    public boolean authorize(String login, String password){
+    public User authorize(String login, String password){
         try (InputStream inputStream = DataFromURL.getData(Constants.SERVER_URL + "/users?" +
                 "&login=" + URLEncoder.encode(login, StandardCharsets.UTF_8) +
                 "&password=" + URLEncoder.encode(password, StandardCharsets.UTF_8), "POST")) {
             ObjectMapper mapper = new ObjectMapper();
             ResponseResult<User> result = mapper.readValue(inputStream, new TypeReference<>() {});
-            return result.isTrue(); // check if authorization is successful
+            return result.getData(); // check if authorization is successful
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Connection failure!");
             alert.show();
-            return false;
+            return null;
         }
         catch (IllegalArgumentException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Wrong login or password!");
             alert.show();
-            return false;
+            return null;
+        }
+    }
+
+    public User get(int userId){
+        try (InputStream inputStream = DataFromURL.getData(Constants.SERVER_URL + "/users?" +
+                "&id=" + userId, "GET")) {
+            ObjectMapper mapper = new ObjectMapper();
+            ResponseResult<User> result = mapper.readValue(inputStream, new TypeReference<>() {});
+            return result.getData(); // check if retrieving is successful
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Connection failure!");
+            alert.show();
+            return null;
         }
     }
 

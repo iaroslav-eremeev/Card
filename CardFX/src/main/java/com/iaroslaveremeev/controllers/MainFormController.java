@@ -2,6 +2,9 @@ package com.iaroslaveremeev.controllers;
 
 import com.iaroslaveremeev.model.Card;
 import com.iaroslaveremeev.model.Category;
+import com.iaroslaveremeev.model.User;
+import com.iaroslaveremeev.repository.CategoryRepository;
+import com.iaroslaveremeev.repository.UserRepository;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.scene.control.ComboBox;
@@ -11,6 +14,7 @@ import javafx.scene.control.TextField;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.prefs.Preferences;
 
 public class MainFormController {
     public ComboBox<Category> categoryComboBoxTop;
@@ -19,9 +23,14 @@ public class MainFormController {
     public TextField answer;
     public ComboBox<Category> categoryComboBoxBottom;
 
-    //TODO добавить кнопку для апдейта карточек
+    public Preferences prefs;
+
     public void initialize(){
-        /*this.categoryComboBoxTop.setItems(FXCollections.observableList();*/
+        CategoryRepository categoryRepository = new CategoryRepository();
+        UserRepository userRepository = new UserRepository();
+        int userId = prefs.getInt("userId", 0);
+        this.categoryComboBoxTop
+                .setItems(FXCollections.observableList(categoryRepository.getUserCategories(userId)));
     }
 
     public void addNewCategory(ActionEvent actionEvent) {

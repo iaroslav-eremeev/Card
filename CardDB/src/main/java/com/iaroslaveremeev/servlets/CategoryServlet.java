@@ -16,9 +16,6 @@ import java.util.List;
 
 @WebServlet("/categories")
 public class CategoryServlet extends HttpServlet {
-
-    //TODO Сделать отдельный метод для возврата списка ВСЕХ имеющихся категорий (нужно для основной формы)
-
     // Get all the categories for selected user by their id
     // Get category by its id
     @Override
