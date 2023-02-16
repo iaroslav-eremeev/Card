@@ -15,7 +15,7 @@ import static javafx.application.Application.launch;
 
 public class Program extends Application {
     private static Scene scene;
-    private boolean userLoggedIn;
+    private boolean userLoggedIn; //TODO Посмотреть класс Preferences
     public static void main(String[] args) {
         launch();
     }

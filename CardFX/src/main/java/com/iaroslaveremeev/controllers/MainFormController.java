@@ -14,12 +14,13 @@ import java.util.ArrayList;
 
 public class MainFormController {
     public ComboBox<Category> categoryComboBoxTop;
-    public ComboBox<Card> cardComboBox;
+    public ComboBox<Card> cardComboBox; // Карточки относятся к выбранной сверху категории
     public TextField question;
     public TextField answer;
     public ComboBox<Category> categoryComboBoxBottom;
-    public DatePicker date;
+    public DatePicker date; // убрать дату (она остается после создания записи неизменной)
 
+    //TODO добавить кнопку для апдейта карточек
     public void initialize(){
         /*this.categoryComboBoxTop.setItems(FXCollections.observableList();*/
     }
