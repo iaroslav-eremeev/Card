@@ -23,12 +23,9 @@ public class MainFormController {
     public TextField answer;
     public ComboBox<Category> categoryComboBoxBottom;
 
-    public Preferences prefs;
-
     public void initialize(){
         CategoryRepository categoryRepository = new CategoryRepository();
-        UserRepository userRepository = new UserRepository();
-        int userId = prefs.getInt("userId", 0);
+        int userId = Preferences.userRoot().node("userId").getInt("userId", 0);
         this.categoryComboBoxTop
                 .setItems(FXCollections.observableList(categoryRepository.getUserCategories(userId)));
     }

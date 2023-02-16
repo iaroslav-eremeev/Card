@@ -8,6 +8,7 @@ import com.iaroslaveremeev.util.Constants;
 import com.iaroslaveremeev.util.DataFromURL;
 import javafx.scene.control.Alert;
 
+import javax.security.auth.login.FailedLoginException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,14 +43,16 @@ public class UserRepository {
                 "&login=" + URLEncoder.encode(login, StandardCharsets.UTF_8) +
                 "&password=" + URLEncoder.encode(password, StandardCharsets.UTF_8), "POST")) {
             ObjectMapper mapper = new ObjectMapper();
+            if (inputStream == null){
+                throw new FailedLoginException();
+            }
             ResponseResult<User> result = mapper.readValue(inputStream, new TypeReference<>() {});
-            return result.getData(); // check if authorization is successful
-        } catch (IOException e) {
+            return result.getData();
+        } catch (IOException | IllegalArgumentException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Connection failure!");
             alert.show();
             return null;
-        }
-        catch (IllegalArgumentException e) {
+        } catch (FailedLoginException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Wrong login or password!");
             alert.show();
             return null;

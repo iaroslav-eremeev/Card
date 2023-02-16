@@ -26,7 +26,8 @@ public class AuthController {
             User user = userRepository.authorize(login, password);
             if (user != null) {
                 prefs = Preferences.userRoot().node("userId");
-                prefs.putInt("user", user.getId());
+                prefs.putInt("userId", user.getId());
+                // Ошибка потому что у Ярослава нет категорий никаких и из-за этого бросает null
                 Program.openWindow("/mainForm.fxml", null);
             }
         } catch (IOException ignored) {}

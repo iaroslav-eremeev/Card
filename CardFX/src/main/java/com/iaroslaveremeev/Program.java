@@ -50,7 +50,8 @@ public class Program extends Application {
             stage.showAndWait();
             return stage;
         } catch (IOException | IllegalArgumentException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Check connection and server settings!");
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR, " Check connection and server settings!");
             alert.show();
             return null;
         }
