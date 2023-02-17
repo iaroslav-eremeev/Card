@@ -40,6 +40,19 @@ public class CategoryRepository {
         }
     }
 
+    public Category addCategory(String name, int userId){
+        try (InputStream inputStream = DataFromURL.getData(Constants.SERVER_URL + "/categories?" +
+                "&name=" + name + "&userId=" + userId, "POST")) {
+            ObjectMapper mapper = new ObjectMapper();
+            ResponseResult<Category> result = mapper.readValue(inputStream, new TypeReference<>() {});
+            return result.getData();
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "User category not added!");
+            alert.show();
+            return null;
+        }
+    }
+
 
 
 

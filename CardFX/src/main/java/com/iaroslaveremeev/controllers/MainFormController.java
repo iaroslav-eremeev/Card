@@ -1,5 +1,6 @@
 package com.iaroslaveremeev.controllers;
 
+import com.iaroslaveremeev.Program;
 import com.iaroslaveremeev.model.Card;
 import com.iaroslaveremeev.model.Category;
 import com.iaroslaveremeev.model.User;
@@ -10,6 +11,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +34,9 @@ public class MainFormController {
                 .setItems(FXCollections.observableList(categoryRepository.getUserCategories(userId)));
     }
 
-    public void addNewCategory(ActionEvent actionEvent) {
+    public void addNewCategory(ActionEvent actionEvent) throws IOException {
+        Program.openWindow("/addCategoryForm.fxml", null);
+        initialize();
     }
     public void deleteChosenCategory(ActionEvent actionEvent) {
     }
