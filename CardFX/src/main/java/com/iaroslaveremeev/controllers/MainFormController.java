@@ -41,6 +41,11 @@ public class MainFormController {
         initialize();
     }
     public void deleteChosenCategory(ActionEvent actionEvent) {
+        CategoryRepository categoryRepository = new CategoryRepository();
+        Category catToDelete = this.categoryComboBoxTop.getSelectionModel().getSelectedItem();
+        categoryRepository.deleteCategory(catToDelete.getId());
+        this.categoryComboBoxTop.getItems().remove(catToDelete);
+        this.categoryComboBoxBottom.getItems().remove(catToDelete);
     }
     public void addNewCard(ActionEvent actionEvent) {
     }

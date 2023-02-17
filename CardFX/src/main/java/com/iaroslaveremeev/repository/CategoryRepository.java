@@ -53,6 +53,19 @@ public class CategoryRepository {
         }
     }
 
+    public Category deleteCategory(int id){
+        try (InputStream inputStream = DataFromURL.getData(Constants.SERVER_URL + "/categories?" +
+                "&id=" + id, "DELETE")) {
+            ObjectMapper mapper = new ObjectMapper();
+            ResponseResult<Category> result = mapper.readValue(inputStream, new TypeReference<>() {});
+            return result.getData();
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "User category not deleted!");
+            alert.show();
+            return null;
+        }
+    }
+
 
 
 
