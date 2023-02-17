@@ -28,6 +28,8 @@ public class MainFormController {
         int userId = Preferences.userRoot().node("userId").getInt("userId", 0);
         this.categoryComboBoxTop
                 .setItems(FXCollections.observableList(categoryRepository.getUserCategories(userId)));
+        this.categoryComboBoxBottom
+                .setItems(FXCollections.observableList(categoryRepository.getUserCategories(userId)));
     }
 
     public void addNewCategory(ActionEvent actionEvent) {
