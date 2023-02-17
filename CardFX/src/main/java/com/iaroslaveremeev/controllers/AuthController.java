@@ -27,16 +27,19 @@ public class AuthController {
             if (user != null) {
                 prefs = Preferences.userRoot().node("userId");
                 prefs.putInt("userId", user.getId());
-                // Ошибка потому что у Ярослава нет категорий никаких и из-за этого бросает null
-                Program.openWindow("/mainForm.fxml", null);
+                Stage mainStage = Program.openWindow("/mainForm.fxml", null);
+                assert mainStage != null;
+                mainStage.show();
+                Stage authStage = (Stage) authLogin.getScene().getWindow();
+                authStage.close();
             }
         } catch (IOException ignored) {}
     }
 
     public void openRegForm(ActionEvent actionEvent) throws IOException {
-        Program.openWindow("/registration.fxml", null);
-        Stage stage = (Stage) authLogin.getScene().getWindow();
-        stage.close();
+        Stage authStage = Program.openWindow("/registration.fxml", null);
+        assert authStage != null;
+        authStage.showAndWait();
     }
 
 }

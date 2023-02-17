@@ -47,7 +47,6 @@ public class Program extends Application {
                 ControllerData<T> controller = loader.getController();
                 controller.initData(data);
             }
-            stage.showAndWait();
             return stage;
         } catch (IOException | IllegalArgumentException e) {
             e.printStackTrace();

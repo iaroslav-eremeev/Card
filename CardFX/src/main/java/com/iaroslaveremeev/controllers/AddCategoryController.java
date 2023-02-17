@@ -11,6 +11,7 @@ import java.util.prefs.Preferences;
 public class AddCategoryController {
     public TextField categoryName;
 
+    //TODO Если у юзера ни одной категории, не нажимается "добавить категорию"
     public void addCategoryInForm(ActionEvent actionEvent) {
         CategoryRepository categoryRepository = new CategoryRepository();
         try {
