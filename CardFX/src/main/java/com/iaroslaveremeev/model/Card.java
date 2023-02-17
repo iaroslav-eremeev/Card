@@ -94,12 +94,12 @@ public class Card {
     @Override
     public String toString() {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        return "Card{" +
-                "id=" + id +
-                ", question='" + question + '\'' +
-                ", answer='" + answer + '\'' +
-                ", categoryId=" + categoryId +
-                ", creationDate=" + dateFormat.format(creationDate) +
-                '}';
+        if (question.length() < 50){
+            return "Id " + id + ", " + dateFormat.format(creationDate)
+                    + ": " + question;
+        }
+        else return "Id " + id + ", " + dateFormat.format(creationDate)
+                + ": " + question.substring(0, 51) + "...";
+
     }
 }

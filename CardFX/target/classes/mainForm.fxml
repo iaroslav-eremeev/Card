@@ -57,7 +57,7 @@
             <Font size="18.0" />
          </font>
       </Label>
-      <ComboBox fx:id="cardComboBox" maxWidth="200.0" prefWidth="200.0" />
+      <ComboBox fx:id="cardComboBox" maxWidth="400.0" prefWidth="400.0" />
       <GridPane maxWidth="400.0" prefWidth="400.0">
         <columnConstraints>
           <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
