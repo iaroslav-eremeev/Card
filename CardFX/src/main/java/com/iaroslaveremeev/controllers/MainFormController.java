@@ -35,7 +35,9 @@ public class MainFormController {
     }
 
     public void addNewCategory(ActionEvent actionEvent) throws IOException {
-        Program.openWindow("/addCategoryForm.fxml", null);
+        Stage mainStage = Program.openWindow("/addCategoryForm.fxml", null);
+        assert mainStage != null;
+        mainStage.showAndWait();
         initialize();
     }
     public void deleteChosenCategory(ActionEvent actionEvent) {
