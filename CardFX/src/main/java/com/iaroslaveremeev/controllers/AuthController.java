@@ -28,6 +28,7 @@ public class AuthController {
                 prefs = Preferences.userRoot().node("userId");
                 prefs.putInt("userId", user.getId());
                 Stage mainStage = Program.openWindow("/mainForm.fxml", null);
+                //TODO NullPointerException при ошибке ввода пароля
                 assert mainStage != null;
                 mainStage.show();
                 Stage authStage = (Stage) authLogin.getScene().getWindow();
