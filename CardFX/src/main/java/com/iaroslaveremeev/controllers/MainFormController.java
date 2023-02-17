@@ -57,4 +57,15 @@ public class MainFormController {
         this.cardComboBox
                 .setItems(FXCollections.observableList(cardRepository.getCategoryCards(catId)));
     }
+
+    public void showCardForUpdate(ActionEvent actionEvent) {
+        CardRepository cardRepository = new CardRepository();
+        Card card = this.cardComboBox.getSelectionModel().getSelectedItem();
+        this.question.setText(card.getQuestion());
+        this.answer.setText(card.getAnswer());
+        CategoryRepository categoryRepository = new CategoryRepository();
+        int catId = card.getCategoryId();
+        Category category = categoryRepository.getCategoryById(catId);
+        this.categoryComboBoxBottom.getSelectionModel().select(category);
+    }
 }

@@ -40,6 +40,20 @@ public class CategoryRepository {
         }
     }
 
+    public Category getCategoryById(int catId){
+        try (InputStream inputStream = DataFromURL.getData(Constants.SERVER_URL + "/categories?" +
+                "&id=" + catId, "GET")) {
+            ObjectMapper mapper = new ObjectMapper();
+            // If user has no categories yet we should return empty ArrayList to avoid IllegalArgumentException
+            ResponseResult<Category> result = mapper.readValue(inputStream, new TypeReference<>() {});
+            return result.getData();
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Category not uploaded!");
+            alert.show();
+            return null;
+        }
+    }
+
     public Category addCategory(String name, int userId){
         try (InputStream inputStream = DataFromURL.getData(Constants.SERVER_URL + "/categories?" +
                 "&name=" + name + "&userId=" + userId, "POST")) {
