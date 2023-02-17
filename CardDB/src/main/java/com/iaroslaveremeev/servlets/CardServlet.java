@@ -13,8 +13,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 
 @WebServlet("/cards")
 public class CardServlet extends HttpServlet {
@@ -120,21 +122,20 @@ public class CardServlet extends HttpServlet {
         String question = req.getParameter("question");
         String answer = req.getParameter("answer");
         String categoryId = req.getParameter("categoryId");
-        String creationDate = req.getParameter("creationDate");
-        if (id != null && question != null && answer != null && categoryId != null && creationDate != null){
+        if (id != null && question != null && answer != null && categoryId != null){
             try (CardRepository cardRepository = new CardRepository();
-                CategoryRepository categoryRepository = new CategoryRepository()){
+                 CategoryRepository categoryRepository = new CategoryRepository()){
                 Card oldCard = cardRepository.get(Integer.parseInt(id));
-                if (oldCard != null){
-                    Card newCard = new Card(Integer.parseInt(id), question, answer,
-                            Integer.parseInt(categoryId), new Timestamp(Long.parseLong(creationDate)));
+                if (oldCard != null && categoryRepository.get(Integer.parseInt(categoryId)) != null){
+                    Card newCard = new Card(oldCard.getId(), question, answer,
+                            Integer.parseInt(categoryId), oldCard.getCreationDate());
                     cardRepository.update(newCard);
                     resp.getWriter()
                             .println(objectMapper.writeValueAsString(new ResponseResult<>(newCard)));
                 }
                 else {
                     resp.setStatus(400);
-                    resp.getWriter().println("There is no category with such id!");
+                    resp.getWriter().println("There is no card or category with such id!");
                 }
             }
             catch (Exception e){

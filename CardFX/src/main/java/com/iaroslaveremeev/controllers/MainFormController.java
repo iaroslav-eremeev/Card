@@ -43,13 +43,6 @@ public class MainFormController {
         this.categoryComboBoxTop.getItems().remove(catToDelete);
         this.categoryComboBoxBottom.getItems().remove(catToDelete);
     }
-    public void addNewCard(ActionEvent actionEvent) {
-    }
-    public void deleteChosenCard(ActionEvent actionEvent) {
-    }
-
-    public void updateCard(ActionEvent actionEvent) {
-    }
 
     public void categoryChosen(ActionEvent actionEvent) {
         CardRepository cardRepository = new CardRepository();
@@ -59,7 +52,6 @@ public class MainFormController {
     }
 
     public void showCardForUpdate(ActionEvent actionEvent) {
-        CardRepository cardRepository = new CardRepository();
         Card card = this.cardComboBox.getSelectionModel().getSelectedItem();
         this.question.setText(card.getQuestion());
         this.answer.setText(card.getAnswer());
@@ -67,5 +59,23 @@ public class MainFormController {
         int catId = card.getCategoryId();
         Category category = categoryRepository.getCategoryById(catId);
         this.categoryComboBoxBottom.getSelectionModel().select(category);
+    }
+
+    public void updateCard(ActionEvent actionEvent) {
+        CardRepository cardRepository = new CardRepository();
+        Card oldCard = this.cardComboBox.getSelectionModel().getSelectedItem();
+        Card newCard = new Card(oldCard.getId(), this.question.getText(),
+                this.answer.getText(),
+                this.categoryComboBoxBottom.getSelectionModel().getSelectedItem().getId(),
+                oldCard.getCreationDate());
+        cardRepository.updateCard(newCard);
+        //TODO обновлять имеющиеся карточки после апдейта
+        // При переключении на другие категории проблема с getQuestion и другими полями карточки
+        // Так как они нулевые, то же самое с КОМБОБОКСАМИ
+    }
+
+    public void addNewCard(ActionEvent actionEvent) {
+    }
+    public void deleteChosenCard(ActionEvent actionEvent) {
     }
 }

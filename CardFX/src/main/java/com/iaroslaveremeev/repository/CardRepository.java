@@ -11,6 +11,8 @@ import javafx.scene.control.Alert;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +31,22 @@ public class CardRepository {
             return result.getData();
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Category's cards not uploaded!");
+            alert.show();
+            return null;
+        }
+    }
+
+    public Card updateCard(Card newCard){
+        try (InputStream inputStream = DataFromURL.getData(Constants.SERVER_URL + "/cards?" +
+                "&id=" + newCard.getId() +
+                "&question=" + URLEncoder.encode(newCard.getQuestion(), StandardCharsets.UTF_8) +
+                "&answer=" + URLEncoder.encode(newCard.getAnswer(), StandardCharsets.UTF_8) +
+                "&categoryId=" + newCard.getCategoryId(), "PUT")) {
+            ObjectMapper mapper = new ObjectMapper();
+            ResponseResult<Card> result = mapper.readValue(inputStream, new TypeReference<>() {});
+            return result.getData();
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Card not updated!");
             alert.show();
             return null;
         }

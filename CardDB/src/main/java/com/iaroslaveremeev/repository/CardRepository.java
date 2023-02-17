@@ -97,13 +97,14 @@ public class CardRepository implements AutoCloseable {
 
     // Update card by its id
     public boolean update(Card card) throws SQLException {
-        String sql = "update cards set cards.question=?, cards.answer=?, cards.creationDate=? " +
-                "where cards.id=?";
+        String sql = "update cards set cards.question=?, cards.answer=?, cards.categoryId=?, " +
+                "cards.creationDate=? where cards.id=?";
         try (PreparedStatement preparedStatement = this.conn.prepareStatement(sql)) {
             preparedStatement.setString(1, card.getQuestion());
             preparedStatement.setString(2, card.getAnswer());
-            preparedStatement.setTimestamp(3, new Timestamp(card.getCreationDate().getTime()));
-            preparedStatement.setInt(4, card.getId());
+            preparedStatement.setInt(3, card.getCategoryId());
+            preparedStatement.setTimestamp(4, (Timestamp) card.getCreationDate());
+            preparedStatement.setInt(5, card.getId());
             return preparedStatement.executeUpdate() > 0;
         } catch (SQLException ignored) {}
         return false;

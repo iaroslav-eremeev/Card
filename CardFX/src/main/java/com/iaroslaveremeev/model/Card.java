@@ -31,13 +31,6 @@ public class Card {
         this.creationDate = new Date();
     }
 
-    public Card(String question, String answer, int categoryId, Date creationDate) {
-        this.question = question;
-        this.answer = answer;
-        this.categoryId = categoryId;
-        this.creationDate = creationDate;
-    }
-
     public int getId() {
         return id;
     }

@@ -15,17 +15,11 @@ import static javafx.application.Application.launch;
 
 public class Program extends Application {
     private static Scene scene;
-    private boolean userLoggedIn; //TODO Посмотреть класс Preferences
     public static void main(String[] args) {
         launch();
     }
     public void start(Stage stage) throws IOException {
-        if (userLoggedIn){
-            scene = new Scene(loadFXML("/mainForm"), 600, 440);
-        }
-        else {
-            scene = new Scene(loadFXML("/authorization"), 600, 300);
-        }
+        scene = new Scene(loadFXML("/authorization"), 600, 300);
         stage.setScene(scene);
         stage.show();
     }
