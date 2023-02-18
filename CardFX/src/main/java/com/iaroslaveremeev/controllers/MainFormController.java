@@ -53,7 +53,9 @@ public class MainFormController {
             this.cardComboBox
                     .setItems(FXCollections.observableList(cardRepository.getCategoryCards(catId)));
         }
-        else this.cardComboBox = null;
+        else {
+            this.cardComboBox.getSelectionModel().clearSelection();
+        }
     }
 
     public void showCardForUpdate(ActionEvent actionEvent) {
