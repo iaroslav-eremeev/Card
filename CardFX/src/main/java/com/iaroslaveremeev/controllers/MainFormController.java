@@ -7,6 +7,7 @@ import com.iaroslaveremeev.repository.CardRepository;
 import com.iaroslaveremeev.repository.CategoryRepository;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -42,23 +43,32 @@ public class MainFormController {
         categoryRepository.deleteCategory(catToDelete.getId());
         this.categoryComboBoxTop.getItems().remove(catToDelete);
         this.categoryComboBoxBottom.getItems().remove(catToDelete);
+        initialize();
     }
 
     public void categoryChosen(ActionEvent actionEvent) {
-        CardRepository cardRepository = new CardRepository();
-        int catId = this.categoryComboBoxTop.getSelectionModel().getSelectedItem().getId();
-        this.cardComboBox
-                .setItems(FXCollections.observableList(cardRepository.getCategoryCards(catId)));
+        if (this.categoryComboBoxTop.getSelectionModel().getSelectedItem() != null){
+            CardRepository cardRepository = new CardRepository();
+            int catId = this.categoryComboBoxTop.getSelectionModel().getSelectedItem().getId();
+            this.cardComboBox
+                    .setItems(FXCollections.observableList(cardRepository.getCategoryCards(catId)));
+        }
+        else this.cardComboBox = null;
     }
 
     public void showCardForUpdate(ActionEvent actionEvent) {
-        Card card = this.cardComboBox.getSelectionModel().getSelectedItem();
-        this.question.setText(card.getQuestion());
-        this.answer.setText(card.getAnswer());
-        CategoryRepository categoryRepository = new CategoryRepository();
-        int catId = card.getCategoryId();
-        Category category = categoryRepository.getCategoryById(catId);
-        this.categoryComboBoxBottom.getSelectionModel().select(category);
+        this.question.clear();
+        this.answer.clear();
+        this.categoryComboBoxBottom.getSelectionModel().clearSelection();
+        if (this.cardComboBox.getSelectionModel().getSelectedItem() != null){
+            Card card = this.cardComboBox.getSelectionModel().getSelectedItem();
+            this.question.setText(card.getQuestion());
+            this.answer.setText(card.getAnswer());
+            CategoryRepository categoryRepository = new CategoryRepository();
+            int catId = card.getCategoryId();
+            Category category = categoryRepository.getCategoryById(catId);
+            this.categoryComboBoxBottom.getSelectionModel().select(category);
+        }
     }
 
     public void updateCard(ActionEvent actionEvent) {
@@ -69,9 +79,11 @@ public class MainFormController {
                 this.categoryComboBoxBottom.getSelectionModel().getSelectedItem().getId(),
                 oldCard.getCreationDate());
         cardRepository.updateCard(newCard);
-        //TODO обновлять имеющиеся карточки после апдейта
-        // При переключении на другие категории проблема с getQuestion и другими полями карточки
-        // Так как они нулевые, то же самое с КОМБОБОКСАМИ
+        if (cardRepository.updateCard(newCard) != null){
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Update successful!");
+            alert.setHeaderText("Card update information");
+            alert.show();
+        }
     }
 
     public void addNewCard(ActionEvent actionEvent) {
