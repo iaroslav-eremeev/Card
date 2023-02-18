@@ -79,11 +79,16 @@ public class MainFormController {
                 this.categoryComboBoxBottom.getSelectionModel().getSelectedItem().getId(),
                 oldCard.getCreationDate());
         cardRepository.updateCard(updatedCard);
-        if (cardRepository.updateCard(updatedCard) != null){
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Update successful!");
-            alert.setHeaderText("Card update information");
-            alert.show();
-        }
+    }
+
+    public void deleteChosenCard(ActionEvent actionEvent) {
+        CardRepository cardRepository = new CardRepository();
+        Card cardToDelete = this.cardComboBox.getSelectionModel().getSelectedItem();
+        cardRepository.deleteCard(cardToDelete.getId());
+        this.cardComboBox.getItems().remove(cardToDelete);
+        this.question.clear();
+        this.answer.clear();
+        this.categoryComboBoxBottom.getSelectionModel().clearSelection();
     }
 
     public void addNewCard(ActionEvent actionEvent) throws IOException {
@@ -97,7 +102,5 @@ public class MainFormController {
         int catId = this.categoryComboBoxTop.getSelectionModel().getSelectedItem().getId();
         this.cardComboBox
                 .setItems(FXCollections.observableList(cardRepository.getCategoryCards(catId)));
-    }
-    public void deleteChosenCard(ActionEvent actionEvent) {
     }
 }

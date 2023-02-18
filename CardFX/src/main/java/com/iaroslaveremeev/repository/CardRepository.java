@@ -51,6 +51,19 @@ public class CardRepository {
         }
     }
 
+    public Card deleteCard(int cardId){
+        try (InputStream inputStream = DataFromURL.getData(Constants.SERVER_URL + "/cards?" +
+                "&id=" + cardId, "DELETE")) {
+            ObjectMapper mapper = new ObjectMapper();
+            ResponseResult<Card> result = mapper.readValue(inputStream, new TypeReference<>() {});
+            return result.getData();
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Card not deleted!");
+            alert.show();
+            return null;
+        }
+    }
+
     public Card addCard(Card newCard){
         try (InputStream inputStream = DataFromURL.getData(Constants.SERVER_URL + "/cards?" +
                 "&question=" + URLEncoder.encode(newCard.getQuestion(), StandardCharsets.UTF_8) +
