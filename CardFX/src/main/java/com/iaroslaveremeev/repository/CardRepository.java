@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iaroslaveremeev.dto.ResponseResult;
 import com.iaroslaveremeev.model.Card;
-import com.iaroslaveremeev.model.Category;
 import com.iaroslaveremeev.util.Constants;
 import com.iaroslaveremeev.util.DataFromURL;
 import javafx.scene.control.Alert;
@@ -36,17 +35,32 @@ public class CardRepository {
         }
     }
 
-    public Card updateCard(Card newCard){
+    public Card updateCard(Card updatedCard){
         try (InputStream inputStream = DataFromURL.getData(Constants.SERVER_URL + "/cards?" +
-                "&id=" + newCard.getId() +
-                "&question=" + URLEncoder.encode(newCard.getQuestion(), StandardCharsets.UTF_8) +
-                "&answer=" + URLEncoder.encode(newCard.getAnswer(), StandardCharsets.UTF_8) +
-                "&categoryId=" + newCard.getCategoryId(), "PUT")) {
+                "&id=" + updatedCard.getId() +
+                "&question=" + URLEncoder.encode(updatedCard.getQuestion(), StandardCharsets.UTF_8) +
+                "&answer=" + URLEncoder.encode(updatedCard.getAnswer(), StandardCharsets.UTF_8) +
+                "&categoryId=" + updatedCard.getCategoryId(), "PUT")) {
             ObjectMapper mapper = new ObjectMapper();
             ResponseResult<Card> result = mapper.readValue(inputStream, new TypeReference<>() {});
             return result.getData();
         } catch (IOException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Card not updated!");
+            alert.show();
+            return null;
+        }
+    }
+
+    public Card addCard(Card newCard){
+        try (InputStream inputStream = DataFromURL.getData(Constants.SERVER_URL + "/cards?" +
+                "&question=" + URLEncoder.encode(newCard.getQuestion(), StandardCharsets.UTF_8) +
+                "&answer=" + URLEncoder.encode(newCard.getAnswer(), StandardCharsets.UTF_8) +
+                "&categoryId=" + newCard.getCategoryId(), "POST")) {
+            ObjectMapper mapper = new ObjectMapper();
+            ResponseResult<Card> result = mapper.readValue(inputStream, new TypeReference<>() {});
+            return result.getData();
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Card not added!");
             alert.show();
             return null;
         }

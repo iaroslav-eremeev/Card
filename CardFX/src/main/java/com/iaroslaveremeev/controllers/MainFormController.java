@@ -74,19 +74,29 @@ public class MainFormController {
     public void updateCard(ActionEvent actionEvent) {
         CardRepository cardRepository = new CardRepository();
         Card oldCard = this.cardComboBox.getSelectionModel().getSelectedItem();
-        Card newCard = new Card(oldCard.getId(), this.question.getText(),
+        Card updatedCard = new Card(oldCard.getId(), this.question.getText(),
                 this.answer.getText(),
                 this.categoryComboBoxBottom.getSelectionModel().getSelectedItem().getId(),
                 oldCard.getCreationDate());
-        cardRepository.updateCard(newCard);
-        if (cardRepository.updateCard(newCard) != null){
+        cardRepository.updateCard(updatedCard);
+        if (cardRepository.updateCard(updatedCard) != null){
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "Update successful!");
             alert.setHeaderText("Card update information");
             alert.show();
         }
     }
 
-    public void addNewCard(ActionEvent actionEvent) {
+    public void addNewCard(ActionEvent actionEvent) throws IOException {
+        Stage mainStage = Program.openWindow("/addCardForm.fxml", null);
+        assert mainStage != null;
+        mainStage.showAndWait();
+        this.question.clear();
+        this.answer.clear();
+        this.categoryComboBoxBottom.getSelectionModel().clearSelection();
+        CardRepository cardRepository = new CardRepository();
+        int catId = this.categoryComboBoxTop.getSelectionModel().getSelectedItem().getId();
+        this.cardComboBox
+                .setItems(FXCollections.observableList(cardRepository.getCategoryCards(catId)));
     }
     public void deleteChosenCard(ActionEvent actionEvent) {
     }
