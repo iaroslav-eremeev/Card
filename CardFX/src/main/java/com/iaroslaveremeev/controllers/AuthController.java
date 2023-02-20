@@ -4,8 +4,6 @@ import com.iaroslaveremeev.Program;
 import com.iaroslaveremeev.model.User;
 import com.iaroslaveremeev.repository.UserRepository;
 import javafx.event.ActionEvent;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;

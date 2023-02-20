@@ -7,7 +7,6 @@ import com.iaroslaveremeev.repository.CardRepository;
 import com.iaroslaveremeev.repository.CategoryRepository;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -17,7 +16,7 @@ import java.util.prefs.Preferences;
 
 public class MainFormController {
     public ComboBox<Category> categoryComboBoxTop;
-    public ComboBox<Card> cardComboBox; // Карточки относятся к выбранной сверху категории
+    public ComboBox<Card> cardComboBox;
     public TextField question;
     public TextField answer;
     public ComboBox<Category> categoryComboBoxBottom;
@@ -104,5 +103,20 @@ public class MainFormController {
         int catId = this.categoryComboBoxTop.getSelectionModel().getSelectedItem().getId();
         this.cardComboBox
                 .setItems(FXCollections.observableList(cardRepository.getCategoryCards(catId)));
+    }
+
+    public void registerUserFromMainForm(ActionEvent actionEvent) throws IOException {
+        Stage authStage = Program.openWindow("/registration.fxml", null);
+        assert authStage != null;
+        authStage.showAndWait();
+    }
+
+    public void logOut(ActionEvent actionEvent) throws IOException {
+        Preferences.userRoot().node("userId").remove("userId");
+        Stage authStage = Program.openWindow("/authorization.fxml", null);
+        assert authStage != null;
+        authStage.show();
+        Stage mainStage = (Stage) categoryComboBoxTop.getScene().getWindow();
+        mainStage.close();
     }
 }
