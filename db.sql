@@ -16,8 +16,6 @@ create table if not exists card.categories
         primary key,
     name   varchar(100) not null,
     userId int          not null,
-    constraint name
-        unique (name),
     constraint categories_ibfk_1
         foreign key (userId) references card.users (id)
             on update cascade on delete cascade
