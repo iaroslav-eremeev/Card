@@ -12,8 +12,8 @@ public class AddCategoryController {
     public TextField categoryName;
 
     public void addCategoryInForm(ActionEvent actionEvent) {
-        CategoryRepository categoryRepository = new CategoryRepository();
         try {
+            CategoryRepository categoryRepository = new CategoryRepository();
             categoryRepository
                     .addCategory(categoryName.getText(),
                             Preferences.userRoot().node("userId").getInt("userId", 0));
