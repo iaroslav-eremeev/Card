@@ -10,6 +10,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.IOException;
+import java.util.prefs.Preferences;
 
 import static javafx.application.Application.launch;
 
@@ -19,8 +20,12 @@ public class Program extends Application {
         launch();
     }
     public void start(Stage stage) throws IOException {
-        //TODO Добавить Preferences - сохранение авторизации (и заодно кнопку Log out)
-        scene = new Scene(loadFXML("/authorization"), 600, 300);
+        if (Preferences.userRoot().node("userId") == null){
+            scene = new Scene(loadFXML("/authorization"), 600, 300);
+        }
+        else {
+            scene = new Scene(loadFXML("/mainForm"), 600, 450);
+        }
         stage.setScene(scene);
         stage.show();
     }

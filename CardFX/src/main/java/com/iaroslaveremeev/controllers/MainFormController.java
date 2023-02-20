@@ -7,6 +7,7 @@ import com.iaroslaveremeev.repository.CardRepository;
 import com.iaroslaveremeev.repository.CategoryRepository;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -37,12 +38,20 @@ public class MainFormController {
         initialize();
     }
     public void deleteCategory(ActionEvent actionEvent) {
-        CategoryRepository categoryRepository = new CategoryRepository();
-        Category catToDelete = this.categoryComboBoxTop.getSelectionModel().getSelectedItem();
-        categoryRepository.deleteCategory(catToDelete.getId());
-        this.categoryComboBoxTop.getItems().remove(catToDelete);
-        this.categoryComboBoxBottom.getItems().remove(catToDelete);
-        initialize();
+        try {
+            CategoryRepository categoryRepository = new CategoryRepository();
+            Category catToDelete = this.categoryComboBoxTop.getSelectionModel().getSelectedItem();
+            if (catToDelete == null){
+                throw new NullPointerException();
+            }
+            categoryRepository.deleteCategory(catToDelete.getId());
+            this.categoryComboBoxTop.getItems().remove(catToDelete);
+            this.categoryComboBoxBottom.getItems().remove(catToDelete);
+            initialize();
+        } catch (NullPointerException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "You didn't choose any category!");
+            alert.show();
+        }
     }
 
     public void categoryChosen(ActionEvent actionEvent) {
@@ -83,13 +92,21 @@ public class MainFormController {
     }
 
     public void deleteChosenCard(ActionEvent actionEvent) {
-        CardRepository cardRepository = new CardRepository();
-        Card cardToDelete = this.cardComboBox.getSelectionModel().getSelectedItem();
-        cardRepository.deleteCard(cardToDelete.getId());
-        this.cardComboBox.getItems().remove(cardToDelete);
-        this.question.clear();
-        this.answer.clear();
-        this.categoryComboBoxBottom.getSelectionModel().clearSelection();
+        try {
+            CardRepository cardRepository = new CardRepository();
+            Card cardToDelete = this.cardComboBox.getSelectionModel().getSelectedItem();
+            if (cardToDelete == null){
+                throw new NullPointerException();
+            }
+            cardRepository.deleteCard(cardToDelete.getId());
+            this.cardComboBox.getItems().remove(cardToDelete);
+            this.question.clear();
+            this.answer.clear();
+            this.categoryComboBoxBottom.getSelectionModel().clearSelection();
+        } catch (NullPointerException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "You didn't choose any card!");
+            alert.show();
+        }
     }
 
     public void addNewCard(ActionEvent actionEvent) throws IOException {
@@ -100,9 +117,11 @@ public class MainFormController {
         this.answer.clear();
         this.categoryComboBoxBottom.getSelectionModel().clearSelection();
         CardRepository cardRepository = new CardRepository();
-        int catId = this.categoryComboBoxTop.getSelectionModel().getSelectedItem().getId();
-        this.cardComboBox
-                .setItems(FXCollections.observableList(cardRepository.getCategoryCards(catId)));
+        if (this.categoryComboBoxTop.getSelectionModel().getSelectedItem() != null){
+            int catId = this.categoryComboBoxTop.getSelectionModel().getSelectedItem().getId();
+            this.cardComboBox
+                    .setItems(FXCollections.observableList(cardRepository.getCategoryCards(catId)));
+        }
     }
 
     public void registerUserFromMainForm(ActionEvent actionEvent) throws IOException {
