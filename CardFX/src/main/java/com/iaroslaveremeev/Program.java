@@ -19,6 +19,7 @@ public class Program extends Application {
         launch();
     }
     public void start(Stage stage) throws IOException {
+        //TODO Добавить Preferences - сохранение авторизации (и заодно кнопку Log out)
         scene = new Scene(loadFXML("/authorization"), 600, 300);
         stage.setScene(scene);
         stage.show();
@@ -43,8 +44,7 @@ public class Program extends Application {
             }
             return stage;
         } catch (IOException | IllegalArgumentException e) {
-            e.printStackTrace();
-            Alert alert = new Alert(Alert.AlertType.ERROR, " Check connection and server settings!");
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Server error. Check connection!");
             alert.show();
             return null;
         }

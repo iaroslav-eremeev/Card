@@ -49,7 +49,7 @@ public class UserRepository {
             ResponseResult<User> result = mapper.readValue(inputStream, new TypeReference<>() {});
             return result.getData();
         } catch (IOException | IllegalArgumentException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Connection failure!");
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Server error. Check connection!");
             alert.show();
             return null;
         } catch (FailedLoginException e) {
@@ -66,7 +66,7 @@ public class UserRepository {
             ResponseResult<User> result = mapper.readValue(inputStream, new TypeReference<>() {});
             return result.getData(); // check if retrieving is successful
         } catch (IOException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Connection failure!");
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Server error. Check connection!");
             alert.show();
             return null;
         }
