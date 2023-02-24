@@ -58,7 +58,7 @@ public class CardRepository {
             ResponseResult<Card> result = mapper.readValue(inputStream, new TypeReference<>() {});
             return result.getData();
         } catch (IOException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Card not deleted!");
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Card not deleted! Check connection!");
             alert.show();
             return null;
         }
@@ -73,7 +73,7 @@ public class CardRepository {
             ResponseResult<Card> result = mapper.readValue(inputStream, new TypeReference<>() {});
             return result.getData();
         } catch (IOException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Card not added!");
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Card not added! Check connection!");
             alert.show();
             return null;
         }
